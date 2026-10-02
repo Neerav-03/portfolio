@@ -30,18 +30,23 @@ test.describe('Neerav Quest', () => {
       () => Number(document.querySelector('.quest__stage')?.getAttribute('data-player-x')) >= 80,
     );
     await page.keyboard.up('ArrowRight');
-    for (let i = 0; i < 40; i++) {
-      await page.waitForTimeout(120);
+    // Feedback loop: line up under the block and jump; repeat if a bug knocks us off target.
+    const unlocked = () => page.locator('.quest__facts li.is-on').count();
+    for (let i = 0; i < 30 && (await unlocked()) === 0; i++) {
       const x = await px();
-      if (x >= 106 && x <= 118) break;
+      if (x >= 106 && x <= 118) {
+        await page.keyboard.down('Space');
+        await page.waitForTimeout(380);
+        await page.keyboard.up('Space');
+        await page.waitForTimeout(250);
+        continue;
+      }
       const key = x < 106 ? 'ArrowRight' : 'ArrowLeft';
       await page.keyboard.down(key);
-      await page.waitForTimeout(40);
+      await page.waitForTimeout(x < 70 || x > 150 ? 200 : 40);
       await page.keyboard.up(key);
+      await page.waitForTimeout(90);
     }
-    await page.keyboard.down('Space');
-    await page.waitForTimeout(400);
-    await page.keyboard.up('Space');
     await expect(page.locator('.quest__facts li.is-on').first()).toContainText('Software Engineer');
   });
 
@@ -77,5 +82,45 @@ test.describe('Neerav Quest', () => {
     const stage = page.getByRole('application', { name: /neerav quest/i });
     await stage.getByRole('button', { name: /^play$/i }).click();
     await expect(page.locator('.quest__pad')).toBeVisible();
+  });
+});
+
+test.describe('Neerav Quest: tutorial and sound', () => {
+  test('desktop shows the move/jump tutorial; it goes away once learned', async ({ page, os, isMobile }) => {
+    test.skip(isMobile, 'keyboard tutorial is desktop-only');
+    await os.visit();
+    const stage = page.getByRole('application', { name: /neerav quest/i });
+    await stage.getByRole('button', { name: /^play$/i }).click();
+    await expect(page.getByText(/to move/)).toBeVisible();
+    await page.keyboard.down('ArrowRight');
+    await page.waitForTimeout(150);
+    await page.keyboard.up('ArrowRight');
+    await expect(page.getByText(/to jump/)).toBeVisible();
+    await page.keyboard.press('Space');
+    await expect(page.locator('.quest__hint')).toHaveCount(0);
+  });
+
+  test('phones get no keyboard tutorial', async ({ page, os, isMobile }) => {
+    test.skip(!isMobile, 'touch only');
+    await os.visit();
+    await page
+      .getByRole('application', { name: /neerav quest/i })
+      .getByRole('button', { name: /^play$/i })
+      .click();
+    await expect(page.locator('.quest__pad')).toBeVisible();
+    await expect(page.locator('.quest__hint')).toHaveCount(0);
+  });
+
+  test('mute is remembered across visits', async ({ page, os }) => {
+    await os.visit();
+    const toggle = page.getByRole('button', { name: /game sound and haptics/i });
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await page.reload();
+    await expect(page.getByRole('button', { name: /game sound and haptics/i })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
   });
 });

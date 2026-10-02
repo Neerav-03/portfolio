@@ -1,9 +1,11 @@
-import { ArrowLeft, ArrowRight, ArrowUp, Eye, Mail, Pause, Play, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, Eye, Mail, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { profile } from '../data/portfolio';
 import { LinkedInIcon } from '../components/BrandIcons';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useOS } from '../os/useOS';
-import { createWorld, step, VIEW_H, VIEW_W, type Input, type World } from './engine';
+import { createWorld, step, VIEW_H, VIEW_W, type Input, type QuestEvent, type World } from './engine';
+import { createFeedback, soundPreference, type Cue, type Feedback } from './feedback';
 import { questFacts } from './facts';
 import { consumeQuestLaunch, QUEST_EVENT } from './launch';
 import { buildLevel } from './level';
@@ -12,6 +14,17 @@ import { buildSprites, readPalette, type Palette, type Sprites } from './sprites
 import './quest.css';
 
 type Status = 'title' | 'playing' | 'paused' | 'won';
+
+/** Which sound / vibration plays for each game event. */
+const EVENT_CUE: Record<QuestEvent['type'], Cue> = {
+  jump: 'jump',
+  fact: 'fact',
+  commit: 'commit',
+  squash: 'stomp',
+  hurt: 'hurt',
+  fell: 'fall',
+  won: 'win',
+};
 
 const KEYS: Record<string, keyof Input> = {
   ArrowLeft: 'left',
@@ -43,6 +56,29 @@ export default function Quest() {
   const [hud, setHud] = useState({ commits: 0, squashed: 0 });
   const [announcement, setAnnouncement] = useState('');
   const [result, setResult] = useState<{ seconds: number; facts: number; commits: number } | null>(null);
+  // Desktop (keyboard) players get tutorial signs and a hint chip until they've moved and jumped.
+  const touch = useMediaQuery('(pointer: coarse)');
+  const hintsRef = useRef(true);
+  const [learned, setLearned] = useState({ moved: false, jumped: false });
+  // Sound + haptics: one switch, remembered between visits.
+  const fxRef = useRef<Feedback | null>(null);
+  const [soundOn, setSoundOn] = useState(soundPreference);
+
+  useEffect(() => {
+    const fx = createFeedback();
+    fxRef.current = fx;
+    return () => fx.dispose();
+  }, []);
+
+  const toggleSound = useCallback(() => {
+    const fx = fxRef.current;
+    const next = !(fx?.enabled ?? soundPreference());
+    fx?.setEnabled(next);
+    setSoundOn(next);
+    if (next) fx?.cue('commit');
+    // Keep playing: hand focus back to the game surface.
+    if (statusRef.current === 'playing') hostRef.current?.focus({ preventScroll: true });
+  }, []);
 
   const setStatus = useCallback((s: Status) => {
     statusRef.current = s;
@@ -57,7 +93,7 @@ export default function Quest() {
     if (!canvas || !world || !gfx || !ctx) return;
     const scale = canvas.width / VIEW_W;
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    render(ctx, world, gfx.sprites, gfx.palette, facts, performance.now() / 1000);
+    render(ctx, world, gfx.sprites, gfx.palette, facts, performance.now() / 1000, { hints: hintsRef.current });
   }, [facts]);
 
   // Colours follow the theme: rebuild sprites whenever data-theme flips.
@@ -73,6 +109,11 @@ export default function Quest() {
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => mo.disconnect();
   }, [draw]);
+
+  useEffect(() => {
+    hintsRef.current = !touch;
+    draw();
+  }, [touch, draw]);
 
   // Crisp pixels at any size: an integer multiple of the logical resolution.
   useEffect(() => {
@@ -96,9 +137,12 @@ export default function Quest() {
       setHud({ commits: 0, squashed: 0 });
       setResult(null);
       setAnnouncement('');
+      setLearned({ moved: false, jumped: false });
     }
     inputRef.current = noInput();
     setStatus('playing');
+    fxRef.current?.unlock();
+    fxRef.current?.cue('start');
     hostRef.current?.focus({ preventScroll: true });
   }, [facts, setStatus]);
 
@@ -120,6 +164,7 @@ export default function Quest() {
       last = now;
       if (events.length) {
         for (const e of events) {
+          fxRef.current?.cue(EVENT_CUE[e.type]);
           if (e.type === 'fact') {
             const f = facts[e.index];
             setAnnouncement(`Unlocked: ${f.label} ${f.detail}`);
@@ -159,6 +204,11 @@ export default function Quest() {
         }
         return;
       }
+      if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        toggleSound();
+        return;
+      }
       if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
         e.preventDefault();
         e.stopPropagation();
@@ -169,6 +219,9 @@ export default function Quest() {
       if (k) {
         e.preventDefault();
         inputRef.current[k] = true;
+        setLearned((l) =>
+          k === 'jump' ? (l.jumped ? l : { ...l, jumped: true }) : l.moved ? l : { ...l, moved: true },
+        );
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
@@ -176,7 +229,9 @@ export default function Quest() {
       if (k) inputRef.current[k] = false;
     };
     const onFocusOut = (e: FocusEvent) => {
-      if (!host.contains(e.relatedTarget as Node | null)) pause();
+      // Moving focus to the game's own controls (mute, pause) doesn't pause it.
+      const within = host.closest('.quest') ?? host;
+      if (!within.contains(e.relatedTarget as Node | null)) pause();
     };
     const onVisibility = () => {
       if (document.hidden) pause();
@@ -191,7 +246,7 @@ export default function Quest() {
       host.removeEventListener('focusout', onFocusOut);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [start, pause]);
+  }, [start, pause, toggleSound]);
 
   // PLAY icon / terminal / palette.
   useEffect(() => {
@@ -233,6 +288,15 @@ export default function Quest() {
             bugs fixed <strong>{hud.squashed}</strong>
           </span>
         </p>
+        <button
+          className="quest__icon"
+          onClick={toggleSound}
+          aria-pressed={soundOn}
+          aria-label="Game sound and haptics"
+          title={soundOn ? 'Sound on: click to mute' : 'Sound off: click to unmute'}
+        >
+          {soundOn ? <Volume2 size={13} /> : <VolumeX size={13} />}
+        </button>
         {status === 'playing' && (
           <button className="quest__icon" onClick={pause} aria-label="Pause game">
             <Pause size={13} />
@@ -246,10 +310,24 @@ export default function Quest() {
         // A focusable game surface: arrow keys / WASD move, Space jumps, Esc pauses.
         role="application"
         aria-roledescription="game"
-        aria-label="Neerav Quest. Arrow keys or A and D to move, Space to jump, Escape to pause."
+        aria-label="Neerav Quest. Arrow keys or A and D to move, Space to jump, Escape to pause, M to mute."
         tabIndex={0}
       >
         <canvas ref={canvasRef} className="quest__canvas" aria-hidden="true" />
+
+        {status === 'playing' && !touch && !(learned.moved && learned.jumped) && (
+          <p className="quest__hint mono" aria-hidden="true">
+            {!learned.moved ? (
+              <>
+                Press <span className="kbd">←</span> <span className="kbd">→</span> to move
+              </>
+            ) : (
+              <>
+                Press <span className="kbd">Space</span> to jump
+              </>
+            )}
+          </p>
+        )}
 
         {status === 'title' && (
           <div className="quest__overlay">
@@ -261,7 +339,7 @@ export default function Quest() {
             <p className="quest__keys mono" aria-hidden="true">
               <span className="kbd">←</span>
               <span className="kbd">→</span> move <span className="kbd">Space</span> jump{' '}
-              <span className="kbd">Esc</span> pause
+              <span className="kbd">Esc</span> pause <span className="kbd">M</span> mute
             </p>
           </div>
         )}
@@ -296,7 +374,9 @@ export default function Quest() {
             </div>
           </div>
         )}
+      </div>
 
+      {touch && status === 'playing' && (
         <div className="quest__pad" aria-hidden="true">
           <button
             className="quest__key"
@@ -329,7 +409,7 @@ export default function Quest() {
             <ArrowUp size={18} />
           </button>
         </div>
-      </div>
+      )}
 
       <ul className="quest__facts" aria-label="Facts unlocked in the game">
         {facts.map((f, i) => (

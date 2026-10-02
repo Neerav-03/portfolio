@@ -11,6 +11,15 @@ updates:
         dependency-type: development
       runtime:
         dependency-type: production
+    ignore:
+      # Held back until the lint plugins support them:
+      # eslint-plugin-jsx-a11y peers on ESLint ≤ 9; typescript-eslint supports TypeScript < 6.1.
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: '@eslint/js'
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:

@@ -6,6 +6,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { PALETTE_TOKENS } from '../game/sprites';
 
 const SRC = resolve(__dirname, '..');
 const walk = (dir: string): string[] =>
@@ -147,8 +148,8 @@ describe('pointer events', () => {
   const ALLOWED_POINTER_NONE = [
     'apps/about/about.css | .ab-kiai',
     'components/charts.css | .chart__tip',
-    // Touch-pad container lets taps through to the game; its buttons re-enable pointer events.
-    'game/quest.css | .quest__pad',
+    // Tutorial chip floats over the game; clicks go to the game surface.
+    'game/quest.css | .quest__hint',
     'os/boot.css | .boot.is-leaving',
     'os/shell.css | .dock__tip',
     'os/shell.css | .toast-region',
@@ -167,4 +168,30 @@ describe('pointer events', () => {
     }
     expect(found.sort()).toEqual([...ALLOWED_POINTER_NONE].sort());
   });
+});
+
+describe('Neerav Quest colours', () => {
+  const { dark, light } = tokenBlocks();
+  const hex = (c: string) => (c.match(/../g) ?? []).map((x) => parseInt(x, 16));
+  /** Racks are drawn at 55% opacity over the sky; blend to the colour actually on screen. */
+  const blend = (fg: string, bg: string, alpha: number) =>
+    '#' +
+    hex(fg.slice(1))
+      .map((v, i) => Math.round(v * alpha + hex(bg.slice(1))[i] * (1 - alpha)))
+      .map((v) => v.toString(16).padStart(2, '0'))
+      .join('');
+
+  for (const [name, theme] of [
+    ['dark', dark],
+    ['light', new Map([...dark, ...light])],
+  ] as const) {
+    it(`${name}: { } blocks stand out from the background racks and sky (≥ 3:1)`, () => {
+      const get = (key: keyof typeof PALETTE_TOKENS) => theme.get(PALETTE_TOKENS[key])!;
+      const rack = blend(get('rack'), get('bg'), 0.55);
+      expect(contrast(get('accent'), rack)).toBeGreaterThanOrEqual(3);
+      expect(contrast(get('accent'), get('bg'))).toBeGreaterThanOrEqual(3);
+      // The braces are drawn in the sky colour on the block.
+      expect(contrast(get('bg'), get('accent'))).toBeGreaterThanOrEqual(3);
+    });
+  }
 });

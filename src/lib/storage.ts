@@ -19,4 +19,5 @@ export const STORE_KEYS = {
   booted: 'neeravos.booted',
   mode: 'neeravos.mode',
   theme: 'neeravos.theme',
+  sound: 'neeravos.sound',
 } as const;
