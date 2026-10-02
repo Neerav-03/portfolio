@@ -40,3 +40,10 @@
   background: #fff;
   box-shadow: var(--shadow-pop);
 }
+.pdf-canvas__loading {
+  color: var(--text-2);
+}
+.pdf-canvas:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}

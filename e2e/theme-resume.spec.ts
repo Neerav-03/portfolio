@@ -64,7 +64,8 @@ test.describe('resume', () => {
     await page.getByRole('button', { name: /preview/i }).click();
     const dialog = page.getByRole('dialog', { name: /resume/i });
     await expect(dialog).toBeVisible();
-    await expect(dialog.locator('iframe')).toBeVisible();
+    // Browser PDF viewer where available, otherwise pages rendered by pdf.js.
+    await expect(dialog.locator('iframe, .pdf-canvas canvas').first()).toBeVisible({ timeout: 15_000 });
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
   });

@@ -53,8 +53,8 @@ export default function PdfCanvas({ url, onError }: { url: string; onError: () =
   }, [url, onError]);
 
   return (
-    <div className="pdf-canvas">
-      {status === 'loading' && <div className="loading">rendering resume…</div>}
+    <div className="pdf-canvas" role="region" aria-label="Resume pages" tabIndex={0}>
+      {status === 'loading' && <div className="loading pdf-canvas__loading">rendering resume…</div>}
       <div ref={hostRef} className="pdf-canvas__pages" />
     </div>
   );

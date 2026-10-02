@@ -43,7 +43,9 @@ for (const theme of ['dark', 'light'] as const) {
       test(`no serious a11y violations: ${view || 'desktop'}`, async ({ page, os }) => {
         await os.visit(view, { theme });
         if (view && view !== '#/recruiter') await expect(page.getByRole('dialog').first()).toBeVisible();
-        // Let entry animations settle so contrast is measured on final colours.
+        // Settle fonts, lazy chunks and entry animations so layout and colours are final.
+        await page.waitForLoadState('networkidle');
+        await page.evaluate(() => document.fonts.ready.then(() => undefined));
         await page.waitForTimeout(400);
         expect(await scan(page)).toEqual([]);
       });

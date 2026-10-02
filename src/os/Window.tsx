@@ -1,5 +1,6 @@
 import { ArrowLeft, Maximize2, Minus, X } from 'lucide-react';
 import { useEffect, useRef, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
+import { useScrollable } from '../hooks/useScrollable';
 import { APP_META } from './appMeta';
 import { useOS } from './useOS';
 import { DESKTOP_BOTTOM, DESKTOP_TOP, type WindowState } from './osState';
@@ -19,6 +20,8 @@ const MIN_H = 320;
 export function Window({ win, z, isTop, isMobile, children }: WindowProps) {
   const { closeApp, removeApp, minimizeApp, focusApp, toggleMax, setBounds } = useOS();
   const ref = useRef<HTMLElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const bodyScrolls = useScrollable(bodyRef, 'y');
   const meta = APP_META[win.id];
   const titleId = `win-title-${win.id}`;
 
@@ -175,7 +178,13 @@ export function Window({ win, z, isTop, isMobile, children }: WindowProps) {
           <span className="dot dot--ok" /> running
         </span>
       </header>
-      <div className="win__body">{children}</div>
+      <div
+        ref={bodyRef}
+        className="win__body"
+        {...(bodyScrolls ? { tabIndex: 0, role: 'region', 'aria-labelledby': titleId } : {})}
+      >
+        {children}
+      </div>
       {!isMobile && !win.maximized && (
         <div className="win__resize" onPointerDown={(e) => startGesture(e, 'resize')} aria-hidden="true" />
       )}

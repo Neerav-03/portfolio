@@ -40,17 +40,23 @@ test.describe('window manager', () => {
 
   test('windows can be dragged by the title bar', async ({ page, os }) => {
     await os.visit('#/education');
-    const win = windowNamed(page, /education\.sys/);
-    const before = (await win.boundingBox())!;
-    const bar = win.locator('.win__bar');
-    const barBox = (await bar.boundingBox())!;
-    await page.mouse.move(barBox.x + barBox.width * 0.75, barBox.y + barBox.height / 2);
+    const win = windowNamed(page, /education.sys/);
+    // Position as set by the window manager (bounding boxes include the open animation's scale).
+    const pos = () =>
+      win.evaluate((el) => ({
+        x: parseFloat((el as HTMLElement).style.left),
+        y: parseFloat((el as HTMLElement).style.top),
+      }));
+    const before = await pos();
+    const bar = (await win.locator('.win__bar').boundingBox())!;
+    const start = { x: bar.x + bar.width * 0.75, y: bar.y + bar.height / 2 };
+    await page.mouse.move(start.x, start.y);
     await page.mouse.down();
-    await page.mouse.move(barBox.x + barBox.width * 0.75 - 120, barBox.y + 90, { steps: 8 });
+    await page.mouse.move(start.x - 120, start.y + 60, { steps: 8 });
     await page.mouse.up();
-    const after = (await win.boundingBox())!;
+    const after = await pos();
     expect(after.x - before.x).toBeCloseTo(-120, 0);
-    expect(after.y - before.y).toBeCloseTo(90 - barBox.height / 2, 0);
+    expect(after.y - before.y).toBeCloseTo(60, 0);
   });
 
   test('maximize, minimize to dock, restore from dock, close', async ({ page, os }) => {
