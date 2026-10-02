@@ -4,6 +4,8 @@ import { questFacts } from './facts';
 import { buildLevel, GROUND_ROW, isSolid, LEVEL_H, LEVEL_W, Tile, TILE, tileAt } from './level';
 
 const idle: Input = { left: false, right: false, jump: false };
+/** A world whose run has begun (the player has pressed a key). */
+const live = () => Object.assign(createWorld(), { started: true });
 const run = (w: World, input: Input, seconds: number) => {
   const events: QuestEvent[] = [];
   for (let t = 0; t < seconds; t += 1 / 60) events.push(...step(w, input, 1 / 60));
@@ -43,9 +45,27 @@ describe('level', () => {
   });
 });
 
+describe('waiting for the first key', () => {
+  it('nothing moves and the clock is stopped until the run starts', () => {
+    const w = createWorld();
+    expect(w.started).toBe(false);
+    const bugs = w.bugs.map((b) => b.x);
+    const x = w.player.x;
+    expect(run(w, { ...idle, right: true }, 1)).toEqual([]);
+    expect(w.bugs.map((b) => b.x)).toEqual(bugs);
+    expect(w.player.x).toBe(x);
+    expect(w.time).toBe(0);
+
+    w.started = true;
+    run(w, idle, 0.5);
+    expect(w.bugs.some((b, i) => b.x !== bugs[i])).toBe(true);
+    expect(w.time).toBeGreaterThan(0.4);
+  });
+});
+
 describe('player physics', () => {
   it('stands still on the ground', () => {
-    const w = createWorld();
+    const w = live();
     const y = w.player.y;
     run(w, idle, 1);
     expect(w.player.y).toBeCloseTo(y, 5);
@@ -53,18 +73,18 @@ describe('player physics', () => {
   });
 
   it('runs right and is stopped by walls', () => {
-    const w = createWorld();
+    const w = live();
     const x = w.player.x;
     run(w, { ...idle, right: true }, 0.5);
     expect(w.player.x).toBeGreaterThan(x + 30);
     // Level edge acts as a wall.
-    const left = createWorld();
+    const left = live();
     run(left, { ...idle, left: true }, 2);
     expect(left.player.x).toBeGreaterThanOrEqual(0);
   });
 
   it('jump height matches the tuned apex (~59 px) and lands again', () => {
-    const w = createWorld();
+    const w = live();
     const ground = w.player.y;
     let apex = ground;
     step(w, { ...idle, jump: true }, 1 / 60);
@@ -78,14 +98,14 @@ describe('player physics', () => {
   });
 
   it('emits a jump event when a jump starts (for sound)', () => {
-    const w = createWorld();
+    const w = live();
     expect(step(w, { ...idle, jump: true }, 1 / 60)).toContainEqual({ type: 'jump' });
     expect(step(w, { ...idle, jump: true }, 1 / 60)).not.toContainEqual({ type: 'jump' });
   });
 
   it('releasing jump early gives a shorter hop', () => {
-    const full = createWorld();
-    const short = createWorld();
+    const full = live();
+    const short = live();
     const g = full.player.y;
     let apexFull = g;
     let apexShort = g;
@@ -99,7 +119,7 @@ describe('player physics', () => {
   });
 
   it('bumping a code block reveals its fact exactly once', () => {
-    const w = createWorld();
+    const w = live();
     const first = w.level.blocks[0];
     w.player.x = first.col * TILE + (TILE - w.player.w) / 2;
     const events = run(w, { ...idle, jump: true }, 0.6);
@@ -112,7 +132,7 @@ describe('player physics', () => {
   });
 
   it('stomping a bug squashes it; touching it from the side hurts', () => {
-    const stomp = createWorld();
+    const stomp = live();
     const bug = stomp.bugs[0];
     stomp.player.x = bug.x;
     stomp.player.y = bug.y - stomp.player.h - 6;
@@ -122,7 +142,7 @@ describe('player physics', () => {
     expect(e1).toContainEqual({ type: 'squash' });
     expect(bug.alive).toBe(false);
 
-    const side = createWorld();
+    const side = live();
     const b2 = side.bugs[0];
     side.player.x = b2.x - side.player.w + 2;
     side.player.y = b2.y + b2.h - side.player.h;
@@ -133,7 +153,7 @@ describe('player physics', () => {
   });
 
   it('falling into a pit respawns on the last safe ground', () => {
-    const w = createWorld();
+    const w = live();
     w.player.x = 27 * TILE; // over the first gap
     w.player.y = GROUND_ROW * TILE;
     w.player.onGround = false;
@@ -143,7 +163,7 @@ describe('player physics', () => {
   });
 
   it('collects commits', () => {
-    const w = createWorld();
+    const w = live();
     const c = w.commits[0];
     w.player.x = c.x;
     w.player.y = c.y;
@@ -153,7 +173,7 @@ describe('player physics', () => {
   });
 
   it('camera follows the player and stays inside the level', () => {
-    const w = createWorld();
+    const w = live();
     expect(cameraX(w)).toBe(0);
     w.player.x = LEVEL_W * TILE;
     expect(cameraX(w)).toBe(LEVEL_W * TILE - VIEW_W);
@@ -162,7 +182,7 @@ describe('player physics', () => {
 
 describe('the level is beatable', () => {
   it('a simple bot reaches the flag', () => {
-    const w = createWorld();
+    const w = live();
     let won = false;
     for (let frame = 0; frame < 60 * 120 && !won; frame++) {
       const p = w.player;
@@ -183,7 +203,7 @@ describe('the level is beatable', () => {
   });
 
   it('nothing advances after winning', () => {
-    const w = createWorld();
+    const w = live();
     w.won = true;
     const x = w.player.x;
     expect(step(w, { ...idle, right: true }, 1)).toEqual([]);
