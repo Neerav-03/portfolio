@@ -27,6 +27,8 @@ interface OSApi {
   setTerminal: (open: boolean) => void;
   setPalette: (open: boolean) => void;
   setMode: (mode: Mode) => void;
+  previewResume: () => void;
+  closeResumePreview: () => void;
   toast: (text: string) => void;
   copyEmail: () => void;
 }
@@ -37,7 +39,7 @@ function initialState(): OSState {
   const route = parseHash(window.location.hash);
   const stored = readStore(STORE_KEYS.mode);
   const mode: Mode = route.kind === 'recruiter' ? 'recruiter' : route.kind === 'app' ? 'system' : stored === 'recruiter' ? 'recruiter' : 'system';
-  return { windows: [], terminalOpen: false, paletteOpen: false, mode, toast: null };
+  return { windows: [], terminalOpen: false, paletteOpen: false, resumePreviewOpen: false, mode, toast: null };
 }
 
 const viewport = () => ({ width: window.innerWidth, height: window.innerHeight });
@@ -64,6 +66,8 @@ export function OSProvider({ children }: { children: ReactNode }) {
       setTerminal: (open) => dispatch({ type: 'terminal', open }),
       setPalette: (open) => dispatch({ type: 'palette', open }),
       setMode: (mode) => dispatch({ type: 'mode', mode }),
+      previewResume: () => dispatch({ type: 'previewResume', viewport: viewport() }),
+      closeResumePreview: () => dispatch({ type: 'closeResumePreview' }),
       toast: (text) => dispatch({ type: 'toast', text }),
       copyEmail: () => {
         const done = () => dispatch({ type: 'toast', text: `Copied ${profile.email}` });

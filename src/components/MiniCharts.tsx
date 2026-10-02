@@ -182,31 +182,38 @@ export function HeatGrid({ values, rows, cols, label }: { values: number[][]; ro
   const [hover, setHover] = useState<[number, number] | null>(null);
   const max = Math.max(...values.flat());
   return (
-    <div className="heat" role="img" aria-label={label} onMouseLeave={() => setHover(null)}>
-      <span className="heat__corner mono">R ↓ · F →</span>
-      {cols.map((c) => (
-        <span key={c} className="heat__col mono">
-          {c}
-        </span>
-      ))}
-      {values.map((row, r) => (
-        <div key={r} className="heat__row">
-          <span className="heat__rlabel mono">{rows[r]}</span>
-          {row.map((v, c) => {
-            const t = v / max;
-            return (
-              <span
-                key={c}
-                className={`heat__cell${hover?.[0] === r && hover?.[1] === c ? ' is-hover' : ''}`}
-                style={{ background: `color-mix(in srgb, #3987e5 ${Math.round(12 + t * 78)}%, #121418)` }}
-                onMouseEnter={() => setHover([r, c])}
-              >
-                {hover?.[0] === r && hover?.[1] === c ? `${v.toFixed(1)}%` : ''}
-              </span>
-            );
-          })}
-        </div>
-      ))}
+    <div className="heat-wrap">
+      <div className="heat" role="img" aria-label={label} onMouseLeave={() => setHover(null)}>
+        <span className="heat__corner mono">R ↓ · F →</span>
+        {cols.map((c) => (
+          <span key={c} className="heat__col mono">
+            {c}
+          </span>
+        ))}
+        {values.map((row, r) => (
+          <div key={r} className="heat__row">
+            <span className="heat__rlabel mono">{rows[r]}</span>
+            {row.map((v, c) => {
+              const t = v / max;
+              return (
+                <span
+                  key={c}
+                  className={`heat__cell${hover?.[0] === r && hover?.[1] === c ? ' is-hover' : ''}`}
+                  style={{ background: `color-mix(in srgb, var(--series-1) ${Math.round(12 + t * 78)}%, var(--surface-1))`, color: t > 0.55 ? '#fff' : 'var(--text)' }}
+                  onMouseEnter={() => setHover([r, c])}
+                >
+                  {hover?.[0] === r && hover?.[1] === c ? `${v.toFixed(1)}%` : ''}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div className="heat__legend mono" aria-hidden="true">
+        <span>lower share</span>
+        <span className="heat__ramp" />
+        <span>higher share</span>
+      </div>
     </div>
   );
 }

@@ -19,21 +19,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.rs-actions {
-  display: flex;
-  gap: 6px;
-}
-.rs-pdf {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  border: 0;
-  background: #2a2c31;
-}
-.rs-fallback {
-  background: var(--surface-0);
-  height: 100%;
-}
 @container win (max-width: 480px) {
   .rs-file .t-dim {
     display: none;

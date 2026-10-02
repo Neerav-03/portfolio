@@ -29,7 +29,7 @@
   stroke-width: 1.5;
 }
 .graph__edge.is-dim {
-  opacity: 0.3;
+  opacity: var(--dim-opacity);
 }
 .graph__packet {
   fill: var(--accent-strong);
@@ -95,7 +95,7 @@
 }
 
 .graph__node.is-dim {
-  opacity: 0.32;
+  opacity: var(--dim-opacity);
 }
 .graph__node.is-on .graph__box {
   stroke: var(--node-color);

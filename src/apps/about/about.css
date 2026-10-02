@@ -112,7 +112,8 @@
   position: relative;
   height: 14px;
   border-radius: 3px;
-  background: #e9e6df;
+  background: #ecebe6;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
   overflow: visible;
 }
 .ab-belt__fill {
@@ -154,7 +155,7 @@
   bottom: 12px;
   font-size: 22px;
   color: var(--text-4);
-  animation: kiai 900ms var(--ease-out) both;
+  animation: kiai 1400ms var(--ease-out) both;
   pointer-events: none;
 }
 .ab-mod {
@@ -166,9 +167,15 @@
     transform: scale(1.6);
     color: var(--text);
   }
-  30% {
+  25% {
     opacity: 1;
     transform: scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 

@@ -3,11 +3,15 @@ import {
   Box,
   Copy,
   Download,
+  Eye,
   KeyRound,
   LayoutGrid,
+  Monitor,
+  Moon,
   ShieldCheck,
   Store,
   SquareTerminal,
+  Sun,
   Timer,
   UserRoundCheck,
   Workflow,
@@ -17,6 +21,7 @@ import {
 import type { AppId, AppParams } from '../data/types';
 import { codingProfiles, profile, projects, resumeUrl } from '../data/portfolio';
 import { downloadFile } from '../lib/fuzzy';
+import { setThemePreference } from '../lib/theme';
 import { APP_META, DESKTOP_APPS } from './appMeta';
 
 export interface CommandContext {
@@ -25,6 +30,7 @@ export interface CommandContext {
   setMode: (mode: 'system' | 'recruiter') => void;
   closeAll: () => void;
   copyEmail: () => void;
+  previewResume: () => void;
 }
 
 export interface PaletteCommand {
@@ -88,11 +94,15 @@ export function buildCommands(): PaletteCommand[] {
   }));
 
   const actions: PaletteCommand[] = [
-    { id: 'download-resume', group: 'Actions', title: 'Download resume', sub: 'PDF', keywords: 'cv', icon: Download, run: () => downloadFile(resumeUrl, profile.resumeFile) },
+    { id: 'preview-resume', group: 'Actions', title: 'Preview resume', sub: 'View the PDF in place', keywords: 'cv pdf view open', icon: Eye, run: (c) => c.previewResume() },
+    { id: 'download-resume', group: 'Actions', title: 'Download resume', sub: 'PDF', keywords: 'cv pdf', icon: Download, run: () => downloadFile(resumeUrl, profile.resumeFile) },
     { id: 'copy-email', group: 'Actions', title: 'Copy email address', sub: profile.email, keywords: 'contact mail', icon: Copy, run: (c) => c.copyEmail() },
     { id: 'recruiter', group: 'Actions', title: 'Switch to Recruiter mode', sub: 'Fast, single-page summary', keywords: 'simple summary hr', icon: UserRoundCheck, run: (c) => c.setMode('recruiter') },
     { id: 'system', group: 'Actions', title: 'Switch to System mode', sub: 'Full interactive OS', keywords: 'desktop os', icon: LayoutGrid, run: (c) => c.setMode('system') },
     { id: 'close-all', group: 'Actions', title: 'Close all windows', icon: XSquare, run: (c) => c.closeAll() },
+    { id: 'theme-light', group: 'Appearance', title: 'Switch to light theme', keywords: 'appearance mode colour color day', icon: Sun, run: () => setThemePreference('light') },
+    { id: 'theme-dark', group: 'Appearance', title: 'Switch to dark theme', keywords: 'appearance mode colour color night', icon: Moon, run: () => setThemePreference('dark') },
+    { id: 'theme-system', group: 'Appearance', title: 'Use system theme', sub: 'Follow the OS light / dark setting', keywords: 'appearance mode auto os', icon: Monitor, run: () => setThemePreference('system') },
   ];
 
   const links: PaletteCommand[] = [

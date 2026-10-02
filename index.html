@@ -10,7 +10,21 @@
     />
     <meta name="author" content="Neerav Daswani" />
     <meta name="theme-color" content="#08090b" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
+    <script>
+      // Apply the saved theme before first paint (no flash). Default: dark.
+      // Keep in sync with DEFAULT_THEME_PREFERENCE in src/lib/theme.ts.
+      (function () {
+        var theme = 'dark';
+        try {
+          var pref = localStorage.getItem('neeravos.theme');
+          if (pref === 'light' || pref === 'dark') theme = pref;
+          else if (pref === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'light') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f4f5f7');
+      })();
+    </script>
     <link rel="canonical" href="%VITE_SITE_URL%" />
 
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -51,6 +65,11 @@
       body {
         background: #08090b;
         color: #e8eaee;
+      }
+      html[data-theme='light'],
+      html[data-theme='light'] body {
+        background: #f4f5f7;
+        color: #15171c;
       }
     </style>
   </head>

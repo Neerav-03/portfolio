@@ -1,12 +1,13 @@
 import { CornerDownLeft, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { fuzzyScore } from '../lib/fuzzy';
+import { useTheme } from '../lib/theme';
 import { buildCommands, type CommandContext, type PaletteCommand } from './commands';
 import { useOS } from './OSContext';
 import './palette.css';
 
 export default function CommandPalette() {
-  const { state, setPalette, openApp, setTerminal, setMode, closeApp, copyEmail } = useOS();
+  const { state, setPalette, openApp, setTerminal, setMode, closeApp, copyEmail, previewResume } = useOS();
   const open = state.paletteOpen;
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -14,16 +15,21 @@ export default function CommandPalette() {
   const listRef = useRef<HTMLUListElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const commands = useMemo(buildCommands, []);
+  const { preference, theme } = useTheme();
 
   const results = useMemo(() => {
-    const visible = commands.filter((c) => (state.mode === 'recruiter' ? c.id !== 'recruiter' : c.id !== 'system'));
+    const hidden = new Set([
+      state.mode === 'recruiter' ? 'recruiter' : 'system',
+      preference === 'system' ? 'theme-system' : `theme-${theme}`,
+    ]);
+    const visible = commands.filter((c) => !hidden.has(c.id));
     if (!query.trim()) return visible;
     return visible
       .map((c) => ({ c, s: Math.max(fuzzyScore(query, c.title) * 1.2, fuzzyScore(query, `${c.sub ?? ''} ${c.keywords ?? ''} ${c.group}`) * 0.7) }))
       .filter((r) => r.s > 0)
       .sort((a, b) => b.s - a.s)
       .map((r) => r.c);
-  }, [commands, query, state.mode]);
+  }, [commands, query, state.mode, preference, theme]);
 
   useEffect(() => {
     if (open) {
@@ -49,6 +55,7 @@ export default function CommandPalette() {
     setTerminal,
     setMode,
     copyEmail,
+    previewResume,
     closeAll: () => state.windows.forEach((w) => closeApp(w.id)),
   };
 

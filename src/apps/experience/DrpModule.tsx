@@ -2,15 +2,9 @@ import { Play } from 'lucide-react';
 import { useId, useState } from 'react';
 import { ArchitectureGraph, type GraphEdge, type GraphNode } from '../../components/ArchitectureGraph';
 import { Conceptual } from '../../components/Conceptual';
+import { drpBucketTiersDays } from '../../data/portfolio';
 
-/** Only the endpoints of the tier range are documented (62 and 403 days). */
-const TIERS = [
-  { id: 1, days: 62 as number | null },
-  { id: 2, days: null },
-  { id: 3, days: null },
-  { id: 4, days: null },
-  { id: 5, days: 403 as number | null },
-];
+const TIERS = drpBucketTiersDays.map((days, i) => ({ id: i + 1, days }));
 
 const CONCEPTS = [
   'day-exact expiry',
@@ -44,7 +38,7 @@ function bandNodes(tier: number): GraphNode[] {
     ...TIERS.map((t, i) => ({
       id: `b${t.id}`,
       label: `BAND ${t.id}`,
-      sub: t.days ? `${t.days} days` : 'intermediate',
+      sub: `${t.days}-day lifecycle`,
       x: 380,
       y: 34 + i * 58,
       w: 150,
@@ -74,7 +68,7 @@ export function DrpModule() {
 
   const t = TIERS[tier - 1];
   const expired = age >= 100;
-  const ageText = t.days ? `day ${Math.round((age / 100) * t.days)} of ${t.days}` : `${age}% of retention window`;
+  const ageText = `day ${Math.round((age / 100) * t.days)} of ${t.days}`;
 
   const request = () => {
     setLog((prev) =>
@@ -142,9 +136,15 @@ export function DrpModule() {
             </span>
             <div className="seg" role="radiogroup" aria-labelledby="tier-label">
               {TIERS.map((x) => (
-                <button key={x.id} className="seg__btn" role="radio" aria-checked={tier === x.id} onClick={() => setTier(x.id)}>
-                  T{x.id}
-                  {x.days ? ` · ${x.days}d` : ''}
+                <button
+                  key={x.id}
+                  className="seg__btn"
+                  role="radio"
+                  aria-checked={tier === x.id}
+                  aria-label={`Tier ${x.id}, ${x.days} days`}
+                  onClick={() => setTier(x.id)}
+                >
+                  {x.days}d
                 </button>
               ))}
             </div>
@@ -216,8 +216,8 @@ export function DrpModule() {
         </div>
 
         <Conceptual>
-          Illustrative model of the documented concepts. Only the 62–403 day range of the five tiers is documented, so
-          intermediate tier durations are not shown. Bucket names, tag keys and APIs are intentionally omitted.
+          Illustrative model of the documented concepts, using the five bucket tiers (62, 93, 124, 217 and 403 days). Bucket
+          names, tag keys and APIs are intentionally omitted.
         </Conceptual>
       </section>
 

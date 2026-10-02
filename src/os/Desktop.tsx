@@ -1,4 +1,4 @@
-import { ArrowUpRight, Download, Mail } from 'lucide-react';
+import { ArrowUpRight, Download, Eye, Mail } from 'lucide-react';
 import type { AppId, AppParams } from '../data/types';
 import { codingProfiles, education, exams, profile, resumeUrl } from '../data/portfolio';
 import { preloadApp } from '../apps/registry';
@@ -26,7 +26,7 @@ export const FEATURED_MODULES: ModuleLink[] = [
 ];
 
 export function IdentityCard() {
-  const { copyEmail, openApp } = useOS();
+  const { copyEmail, openApp, previewResume } = useOS();
   return (
     <section className="widget identity" aria-labelledby="identity-name">
       <div className="widget__head">
@@ -61,10 +61,18 @@ export function IdentityCard() {
           </dd>
         </div>
       </dl>
+      <div className="identity__resume">
+        <span className="label">Resume</span>
+        <div className="identity__actions">
+          <button className="btn btn--primary btn--sm" onClick={previewResume} onMouseEnter={() => preloadApp('resume')}>
+            <Eye size={13} /> Preview
+          </button>
+          <a className="btn btn--sm" href={resumeUrl} download={profile.resumeFile}>
+            <Download size={13} /> Download
+          </a>
+        </div>
+      </div>
       <div className="identity__actions">
-        <a className="btn btn--primary btn--sm" href={resumeUrl} download>
-          <Download size={13} /> Resume
-        </a>
         <a className="btn btn--sm" href={profile.links.github} target="_blank" rel="noreferrer">
           <GitHubIcon size={13} /> GitHub
         </a>

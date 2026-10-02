@@ -42,7 +42,7 @@ export const NODE_INFO: Record<string, { title: string; body: string; modules: (
   },
   s3: {
     title: 's3 · banded buckets',
-    body: 'Uploads and derived video artifacts. Banded bucket infrastructure: five duration tiers (62–403 days), new partition types, lifecycle tagging, presigned-URL access.',
+    body: 'Uploads and derived video artifacts. Banded bucket infrastructure: five duration tiers (62, 93, 124, 217 and 403 days), new partition types, lifecycle tagging, presigned-URL access.',
     modules: ['drp'],
   },
   iam: {

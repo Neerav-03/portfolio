@@ -18,4 +18,5 @@ export function writeStore(key: string, value: string): void {
 export const STORE_KEYS = {
   booted: 'neeravos.booted',
   mode: 'neeravos.mode',
+  theme: 'neeravos.theme',
 } as const;

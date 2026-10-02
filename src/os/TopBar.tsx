@@ -2,6 +2,7 @@ import { Search, SquareTerminal } from 'lucide-react';
 import { useClock } from '../hooks/useClock';
 import { MOD_LABEL } from '../lib/platform';
 import { ModeToggle } from './ModeToggle';
+import { ThemeToggle } from './ThemeToggle';
 import { useOS } from './OSContext';
 
 export function Logo({ size = 14 }: { size?: number }) {
@@ -31,6 +32,7 @@ export function TopBar() {
       </div>
       <div className="topbar__right">
         <ModeToggle />
+        <ThemeToggle />
         <button className="topbar__btn mono" onClick={() => setPalette(true)} aria-label="Open command palette" aria-keyshortcuts="Control+K Meta+K">
           <Search size={13} />
           <span className="topbar__hint">

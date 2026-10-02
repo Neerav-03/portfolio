@@ -84,7 +84,7 @@ svg {
 }
 
 ::selection {
-  background: rgba(107, 155, 255, 0.32);
+  background: var(--selection);
 }
 
 /* Thin, quiet scrollbars */

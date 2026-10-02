@@ -22,6 +22,8 @@ export interface OSState {
   windows: WindowState[];
   terminalOpen: boolean;
   paletteOpen: boolean;
+  /** Resume preview modal (recruiter mode; system mode uses the Resume window). */
+  resumePreviewOpen: boolean;
   mode: Mode;
   toast: { id: number; text: string } | null;
 }
@@ -44,6 +46,8 @@ export type OSAction =
   | { type: 'terminal'; open: boolean }
   | { type: 'palette'; open: boolean }
   | { type: 'mode'; mode: Mode }
+  | { type: 'previewResume'; viewport: Viewport }
+  | { type: 'closeResumePreview' }
   | { type: 'toast'; text: string }
   | { type: 'clearToast'; id: number };
 
@@ -160,7 +164,14 @@ export function osReducer(state: OSState, action: OSAction): OSState {
     case 'palette':
       return { ...state, paletteOpen: action.open, terminalOpen: action.open ? false : state.terminalOpen };
     case 'mode':
-      return { ...state, mode: action.mode, paletteOpen: false };
+      return { ...state, mode: action.mode, paletteOpen: false, resumePreviewOpen: false };
+    case 'previewResume':
+      // System mode previews in the Resume window; recruiter mode has no windows, so use the modal.
+      return state.mode === 'system'
+        ? osReducer({ ...state, paletteOpen: false }, { type: 'open', id: 'resume', viewport: action.viewport })
+        : { ...state, paletteOpen: false, terminalOpen: false, resumePreviewOpen: true };
+    case 'closeResumePreview':
+      return { ...state, resumePreviewOpen: false };
     case 'toast':
       return { ...state, toast: { id: (state.toast?.id ?? 0) + 1, text: action.text } };
     case 'clearToast':

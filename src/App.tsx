@@ -13,6 +13,7 @@ import './os/shell.css';
 const loadTerminal = () => import('./terminal/Terminal');
 const loadPalette = () => import('./os/CommandPalette');
 const Terminal = lazy(loadTerminal);
+const ResumePreview = lazy(() => import('./os/ResumePreview').then((m) => ({ default: m.ResumePreview })));
 const CommandPalette = lazy(loadPalette);
 
 export function App() {
@@ -88,10 +89,9 @@ export function App() {
         </div>
       )}
 
-      <Suspense fallback={null}>
-        {terminalLoaded && <Terminal />}
-        {paletteLoaded && <CommandPalette />}
-      </Suspense>
+      <Suspense fallback={null}>{terminalLoaded && <Terminal />}</Suspense>
+      <Suspense fallback={null}>{paletteLoaded && <CommandPalette />}</Suspense>
+      <Suspense fallback={null}>{state.resumePreviewOpen && <ResumePreview />}</Suspense>
       <Toast />
 
       {!booted && <Boot onDone={onBootDone} />}

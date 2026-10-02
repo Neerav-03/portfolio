@@ -172,4 +172,11 @@ export const extracurriculars: Extracurricular[] = [
   },
 ];
 
+/**
+ * Lifecycle durations (days) of the five banded S3 bucket tiers behind DRP.
+ * The resume documents the 62–403 day range; the intermediate values were
+ * supplied by Neerav.
+ */
+export const drpBucketTiersDays = [62, 93, 124, 217, 403] as const;
+
 export const resumeUrl = `${import.meta.env.BASE_URL}${profile.resumeFile}`;

@@ -11,6 +11,7 @@ import {
   resumeUrl,
   skills,
 } from '../data/portfolio';
+import { getThemeState, setThemePreference, toggleTheme } from '../lib/theme';
 import { isAppId } from '../os/appMeta';
 
 export type Tone = 'dim' | 'ok' | 'err' | 'warn' | 'accent' | 'head';
@@ -25,6 +26,7 @@ export interface TermContext {
   openApp: (id: AppId, params?: AppParams) => void;
   setTerminal: (open: boolean) => void;
   setMode: (mode: 'system' | 'recruiter') => void;
+  previewResume: () => void;
   history: string[];
 }
 
@@ -48,6 +50,8 @@ const dim = (text: string): Line => [{ text, tone: 'dim' }];
 const kv = (k: string, v: string, pad = 14): Line => [{ text: k.padEnd(pad), tone: 'dim' }, { text: v }];
 const link = (label: string, href: string): Line => [{ text: label, href, tone: 'accent' }];
 const hint = (cmd: string, rest: string): Line => [{ text: '→ ', tone: 'dim' }, { text: cmd, tone: 'accent' }, { text: rest, tone: 'dim' }];
+
+const NOOP_CTX: TermContext = { history: [], openApp: () => undefined, setTerminal: () => undefined, setMode: () => undefined, previewResume: () => undefined };
 
 const commands: Record<string, CommandDef> = {
   help: {
@@ -138,16 +142,22 @@ const commands: Record<string, CommandDef> = {
   },
 
   resume: {
-    description: 'Open the resume (PDF)',
-    run: (_a, ctx) => ({
-      lines: [
-        [{ text: 'Opening resume.pdf … ', tone: 'dim' }, { text: 'download', href: resumeUrl, tone: 'accent' }],
-      ],
-      after: () => {
-        ctx.openApp('resume');
-        ctx.setTerminal(false);
-      },
-    }),
+    description: 'Preview or download the resume (PDF)',
+    run: (args, ctx) => {
+      if (args[0] === '--download' || args[0] === '-d') {
+        return { lines: [[{ text: 'resume.pdf → ', tone: 'dim' }, { text: 'download', href: resumeUrl, tone: 'accent' }]] };
+      }
+      return {
+        lines: [
+          [{ text: 'Opening preview … ', tone: 'dim' }, { text: 'or download', href: resumeUrl, tone: 'accent' }],
+          dim('tip: resume --download prints the direct link'),
+        ],
+        after: () => {
+          ctx.setTerminal(false);
+          ctx.previewResume();
+        },
+      };
+    },
   },
 
   github: {
@@ -167,6 +177,31 @@ const commands: Record<string, CommandDef> = {
         [{ text: 'github'.padEnd(10), tone: 'dim' }, { text: profile.links.github.replace('https://', ''), href: profile.links.github, tone: 'accent' }],
       ],
     }),
+  },
+
+  theme: {
+    description: 'Switch light / dark theme',
+    run: (args) => {
+      const arg = (args[0] ?? '').toLowerCase();
+      if (!arg) {
+        const { preference, theme } = getThemeState();
+        return {
+          lines: [
+            kv('theme', preference === 'system' ? `system (${theme})` : theme, 10),
+            dim('usage: theme light | dark | system | toggle'),
+          ],
+        };
+      }
+      if (arg === 'toggle') {
+        toggleTheme();
+        return { lines: [dim(`theme → ${getThemeState().theme}`)] };
+      }
+      if (arg === 'light' || arg === 'dark' || arg === 'system') {
+        setThemePreference(arg);
+        return { lines: [dim(`theme → ${arg}${arg === 'system' ? ` (${getThemeState().theme})` : ''}`)] };
+      }
+      return { lines: [[{ text: `theme: unknown option '${args[0]}'`, tone: 'err' }], dim('usage: theme light | dark | system | toggle')] };
+    },
   },
 
   clear: {
@@ -307,7 +342,7 @@ const commands: Record<string, CommandDef> = {
           ],
         };
       }
-      if (/^rm\s+-rf/.test(rest)) return commands.rm.run(args.slice(1), { history: [], openApp: () => undefined, setTerminal: () => undefined, setMode: () => undefined });
+      if (/^rm\s+-rf/.test(rest)) return commands.rm.run(args.slice(1), NOOP_CTX);
       return { lines: [[{ text: 'guest is not in the sudoers file. This incident will be reported.', tone: 'err' }], dim('(hint: there is exactly one thing sudo can do here.)')] };
     },
   },
@@ -322,7 +357,7 @@ const commands: Record<string, CommandDef> = {
     },
   },
   vim: { description: 'Editor', hidden: true, run: () => ({ lines: [dim('You are now in vim. Just kidding — nobody gets out that easily. :q')] }) },
-  nano: { description: 'Editor', hidden: true, run: () => commands.vim.run([], { history: [], openApp: () => undefined, setTerminal: () => undefined, setMode: () => undefined }) },
+  nano: { description: 'Editor', hidden: true, run: () => commands.vim.run([], NOOP_CTX) },
   ping: { description: 'Ping', hidden: true, run: () => ({ lines: ['pong — 0 ms. No backend; everything here is static.'] }) },
   coffee: { description: 'Brew', hidden: true, run: () => ({ lines: [[{ text: 'HTTP 418', tone: 'warn' }, { text: " — I'm a teapot." }]] }) },
   karate: {

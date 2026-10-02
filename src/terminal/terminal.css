@@ -9,7 +9,7 @@
   height: min(56vh, 520px);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
-  background: rgba(9, 10, 12, 0.97);
+  background: var(--term-bg);
   box-shadow: var(--shadow-pop);
   overflow: hidden;
   transform: translate(-50%, -12px);

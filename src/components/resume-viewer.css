@@ -1,0 +1,42 @@
+.resume-viewer {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--pdf-bg);
+}
+.resume-viewer__frame {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: var(--pdf-bg);
+}
+.resume-viewer__fallback {
+  flex: 1;
+  padding: 24px;
+  align-content: start;
+  background: var(--surface-0);
+}
+.resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pdf-canvas {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 12px;
+}
+.pdf-canvas__pages {
+  display: grid;
+  gap: 12px;
+}
+.pdf-canvas__pages canvas {
+  display: block;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: var(--shadow-pop);
+}

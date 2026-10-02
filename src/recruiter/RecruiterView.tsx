@@ -1,4 +1,4 @@
-import { ArrowUpRight, Download, Mail, Search } from 'lucide-react';
+import { ArrowUpRight, Download, Eye, Mail, Search } from 'lucide-react';
 import {
   codingProfiles,
   contests,
@@ -15,6 +15,7 @@ import { GitHubIcon, LinkedInIcon } from '../components/BrandIcons';
 import { MOD_LABEL } from '../lib/platform';
 import { appHref } from '../lib/route';
 import { ModeToggle } from '../os/ModeToggle';
+import { ThemeToggle } from '../os/ThemeToggle';
 import { useOS } from '../os/OSContext';
 import { Logo } from '../os/TopBar';
 import './recruiter.css';
@@ -35,7 +36,7 @@ function Section({ index, title, id, children }: { index: string; title: string;
 }
 
 export function RecruiterView() {
-  const { setPalette, copyEmail } = useOS();
+  const { setPalette, copyEmail, previewResume } = useOS();
   const cf = codingProfiles[0];
   const cc = codingProfiles[1];
 
@@ -54,6 +55,7 @@ export function RecruiterView() {
               <span className="kbd">K</span>
             </span>
           </button>
+          <ThemeToggle />
           <ModeToggle />
         </div>
       </header>
@@ -78,9 +80,14 @@ export function RecruiterView() {
             ))}
           </div>
           <div className="rv-hero__actions">
-            <a className="btn btn--primary" href={resumeUrl} download>
-              <Download size={14} /> Download Resume
-            </a>
+            <span className="rv-resume">
+              <a className="btn btn--primary" href={resumeUrl} download={profile.resumeFile}>
+                <Download size={14} /> Download Resume
+              </a>
+              <button className="btn" onClick={previewResume}>
+                <Eye size={14} /> Preview
+              </button>
+            </span>
             <a className="btn" href={profile.links.github} target="_blank" rel="noreferrer">
               <GitHubIcon size={14} /> GitHub
             </a>

@@ -4,11 +4,13 @@ The portfolio of **Neerav Daswani**, Software Engineer, built as a small operati
 
 - **System mode** has a boot sequence, a desktop with draggable windows, a dock, a terminal (<kbd>Ctrl</kbd> + <kbd>`</kbd>) and a command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>).
 - **Recruiter mode** is a fast single-page summary with the resume download, GitHub and LinkedIn.
+- **Light and dark themes**: the toggle is in the top bar, and you can also switch from the palette or with `theme light | dark | system` in the terminal. Dark is the default; to follow the OS instead, set `DEFAULT_THEME_PREFERENCE` in `src/lib/theme.ts` (and the matching default in the inline script in `index.html`).
+- **Resume preview** sits next to every download. System mode opens it in the Resume window and recruiter mode in a modal. Browsers without an inline PDF viewer (most Android phones) get pages rendered by a lazy-loaded pdf.js.
 - Every view is deep-linkable, e.g. `#/experience/drp`, `#/projects/moviemate` or `#/recruiter`.
 
 ## Stack
 
-React 19, Vite and TypeScript, styled with plain CSS (design tokens plus per-app stylesheets). The only runtime dependencies are `lucide-react` (icons) and self-hosted Geist fonts. There is no backend; everything is static.
+React 19, Vite and TypeScript, styled with plain CSS (design tokens plus per-app stylesheets). Runtime dependencies are `lucide-react` (icons), self-hosted Geist fonts, and `pdfjs-dist`, which is loaded only on devices that can't display PDFs inline. There is no backend; everything is static.
 
 ## Run locally
 
@@ -24,6 +26,10 @@ npm run preview    # serve the production build
 All factual content lives in **`src/data/portfolio.ts`**: profile, experience bullets, projects, education, competitive programming and extracurriculars. Update that file, and the desktop, recruiter mode, terminal and command palette all pick up the change.
 
 The resume PDF is `public/Neerav_Daswani_Resume.pdf`. Replace it with the same filename.
+
+The DRP simulator's five bucket tiers (62 / 93 / 124 / 217 / 403 days) are `drpBucketTiersDays` in the same data file.
+
+Theme colours are design tokens in `src/styles/tokens.css`: dark under `:root`, light under `:root[data-theme='light']`.
 
 The conceptual diagrams are defined next to their apps:
 
