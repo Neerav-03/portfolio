@@ -32,12 +32,12 @@
   transition: none;
   user-select: none;
 }
-.win.is-dragging .win__body:focus-visible {
+.win.is-dragging .win__body {
+  pointer-events: none;
+}
+.win__body:focus-visible {
   outline: 2px solid var(--accent-line);
   outline-offset: -2px;
-}
-.win__body {
-  pointer-events: none;
 }
 .win.is-minimized {
   opacity: 0;

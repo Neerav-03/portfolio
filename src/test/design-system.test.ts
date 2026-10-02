@@ -135,3 +135,32 @@ describe('colour contrast (WCAG AA)', () => {
     });
   }
 });
+
+describe('pointer events', () => {
+  /**
+   * Rules that disable pointer events. A misplaced `pointer-events: none` once made
+   * every window body unclickable; new entries must be deliberate (state-scoped
+   * or purely decorative) and added here.
+   */
+  const ALLOWED_POINTER_NONE = [
+    'apps/about/about.css | .ab-kiai',
+    'components/charts.css | .chart__tip',
+    'os/boot.css | .boot.is-leaving',
+    'os/shell.css | .dock__tip',
+    'os/shell.css | .toast-region',
+    'os/window.css | .win.is-dragging .win__body',
+    'os/window.css | .win.is-minimized',
+    'os/window.css | .win.is-closing',
+  ];
+
+  it('only allowlisted rules disable pointer events', () => {
+    const found: string[] = [];
+    for (const f of files.filter((f) => f.endsWith('.css'))) {
+      const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
+      for (const m of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        if (/pointer-events:\s*none/.test(m[2])) found.push(`${rel(f)} | ${m[1].trim().replace(/\s+/g, ' ')}`);
+      }
+    }
+    expect(found.sort()).toEqual([...ALLOWED_POINTER_NONE].sort());
+  });
+});
