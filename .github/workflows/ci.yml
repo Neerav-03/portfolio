@@ -1,11 +1,9 @@
 name: CI
 
-# Runs on every pull request and every push to a non-main branch.
-# Pushes to main run it via deploy.yml, which only deploys if this passes.
+# Runs on every pull request (and on demand). Pushes to main run it via
+# deploy.yml, which only deploys if this passes.
 on:
   pull_request:
-  push:
-    branches-ignore: [main]
   workflow_call:
   workflow_dispatch:
 

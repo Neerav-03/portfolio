@@ -73,7 +73,7 @@ Everything is automated; nothing needs checking by hand.
 | End-to-end       | Playwright (desktop + Pixel 7)                                     | boot, windows, palette, terminal, themes, resume preview + pdf.js fallback, mobile layout, no console errors |
 | Accessibility    | axe-core via Playwright                                            | every view in both themes, WCAG 2.1 AA                                                                       |
 
-- `npm run verify:fast` runs locally in ~30s. CI (`.github/workflows/ci.yml`) runs everything, including e2e, on every PR and branch push.
+- `npm run verify:fast` runs locally in ~30s. CI (`.github/workflows/ci.yml`) runs everything, including e2e, on every pull request.
 - Pushes to `main` deploy only after CI passes.
 - Dependabot opens weekly update PRs, which go through the same checks.
 - Repo rules for contributors and agents are in [CLAUDE.md](CLAUDE.md).

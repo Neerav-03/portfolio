@@ -38,7 +38,7 @@ Git hooks (installed by `npm install`):
 - **pre-commit:** ESLint and Prettier on staged files.
 - **pre-push:** `verify:fast`.
 
-CI (`.github/workflows/ci.yml`) runs the full suite, including e2e and accessibility, on every PR and branch push. `deploy.yml` deploys `main` only after that suite passes.
+CI (`.github/workflows/ci.yml`) runs the full suite, including e2e and accessibility, on every pull request. `deploy.yml` deploys `main` only after that suite passes.
 
 ## Where things live
 
