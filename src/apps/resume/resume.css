@@ -1,0 +1,41 @@
+.rs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.rs-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-0);
+}
+.rs-file {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rs-actions {
+  display: flex;
+  gap: 6px;
+}
+.rs-pdf {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: #2a2c31;
+}
+.rs-fallback {
+  background: var(--surface-0);
+  height: 100%;
+}
+@container win (max-width: 480px) {
+  .rs-file .t-dim {
+    display: none;
+  }
+}

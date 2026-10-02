@@ -1,0 +1,138 @@
+.chart {
+  position: relative;
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-mono);
+  overflow: visible;
+}
+.chart__grid line {
+  stroke: var(--line-soft);
+}
+.chart__grid text,
+.chart__xlabel {
+  fill: var(--text-4);
+  font-size: 10px;
+}
+.chart__hit {
+  fill: transparent;
+}
+.chart__bar {
+  fill: var(--series-1);
+  opacity: 0.85;
+  transition: opacity var(--dur-fast);
+}
+.chart__bar.is-hover {
+  opacity: 1;
+  fill: #5a9cf0;
+}
+.chart__line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.chart__cross {
+  stroke: var(--line-strong);
+  stroke-dasharray: 2 3;
+}
+.chart__dot {
+  stroke: var(--surface-1);
+  stroke-width: 2;
+}
+.chart__axis0 {
+  stroke: var(--line-strong);
+}
+.chart__fit {
+  stroke: var(--series-2);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+.chart__pt {
+  fill: var(--series-1);
+  stroke: var(--surface-1);
+  stroke-width: 2;
+  opacity: 0.9;
+}
+.chart__pt.is-hover {
+  opacity: 1;
+  r: 5.5;
+}
+.chart__tip {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: grid;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  box-shadow: var(--shadow-pop);
+  color: var(--text);
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.chart__tip strong {
+  font-weight: 600;
+}
+.chart__tip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+}
+.chart__legend {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 8px;
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.chart__legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chart__swatch {
+  display: inline-block;
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.heat {
+  display: grid;
+  grid-template-columns: 64px repeat(5, 1fr);
+  gap: 3px;
+}
+.heat__row {
+  display: contents;
+}
+.heat__corner,
+.heat__col,
+.heat__rlabel {
+  font-size: 10px;
+  color: var(--text-4);
+  align-self: center;
+}
+.heat__col {
+  text-align: center;
+}
+.heat__cell {
+  display: grid;
+  place-items: center;
+  height: 30px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+.heat__cell.is-hover {
+  box-shadow: inset 0 0 0 1.5px var(--text);
+}

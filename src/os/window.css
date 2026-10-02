@@ -1,0 +1,228 @@
+.win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-0);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-window);
+  overflow: hidden;
+  outline: none;
+  animation: win-in 200ms var(--ease-out);
+  transform-origin: 50% 30%;
+  transition:
+    opacity 160ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    border-color var(--dur) ease;
+}
+.win.is-top {
+  border-color: var(--line-strong);
+}
+.win:not(.is-top) .win__bar {
+  background: var(--surface-0);
+}
+.win:not(.is-top) .win__title {
+  color: var(--text-3);
+}
+.win:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.win.is-dragging {
+  transition: none;
+  user-select: none;
+}
+.win.is-dragging .win__body {
+  pointer-events: none;
+}
+.win.is-minimized {
+  opacity: 0;
+  transform: translateY(40vh) scale(0.3);
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 200ms ease,
+    transform 240ms var(--ease-out),
+    visibility 0s linear 240ms;
+}
+.win.is-closing {
+  animation: win-out 150ms ease forwards;
+  pointer-events: none;
+}
+.win.is-max {
+  border-radius: var(--radius);
+}
+
+@keyframes win-in {
+  from {
+    opacity: 0;
+    transform: scale(0.965) translateY(6px);
+  }
+}
+@keyframes win-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.win__bar {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding: 0 12px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+  cursor: default;
+  touch-action: none;
+  user-select: none;
+}
+
+.win__controls {
+  display: flex;
+  gap: 7px;
+}
+.win__ctl {
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--line-strong);
+  color: transparent;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.win__controls:hover .win__ctl,
+.win__ctl:focus-visible {
+  color: rgba(0, 0, 0, 0.7);
+}
+.win__controls:hover .win__ctl--close,
+.win__ctl--close:focus-visible {
+  background: #e5625c;
+  border-color: #c94e48;
+}
+.win__controls:hover .win__ctl--min,
+.win__ctl--min:focus-visible {
+  background: #e3b14b;
+  border-color: #c4963a;
+}
+.win__controls:hover .win__ctl--max,
+.win__ctl--max:focus-visible {
+  background: #4fbf72;
+  border-color: #3ea25e;
+}
+
+.win__title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--text-2);
+  white-space: nowrap;
+  max-width: calc(100% - 220px);
+  overflow: hidden;
+}
+.win__crumb {
+  color: var(--text-3);
+}
+
+.win__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-4);
+}
+
+.win__body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  container: win / inline-size;
+}
+
+.win__resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+.win__resize::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+/* ---------- Mobile: windows become full-screen panels ---------- */
+.win--mobile {
+  position: fixed;
+  inset: calc(44px + env(safe-area-inset-top)) 0 calc(var(--mnav-h) + env(safe-area-inset-bottom)) 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  animation: panel-in 220ms var(--ease-out);
+}
+.win--mobile.is-minimized,
+.win--mobile:not(.is-top) {
+  display: none;
+}
+.win--mobile.is-closing {
+  animation: panel-out 160ms ease forwards;
+}
+.win--mobile .win__bar {
+  height: 44px;
+  padding: 0 8px;
+}
+.win--mobile .win__title {
+  position: static;
+  transform: none;
+  max-width: none;
+  font-size: 13px;
+  color: var(--text);
+}
+.win--mobile .win__status {
+  display: none;
+}
+.win__back {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  color: var(--text-2);
+}
+.win__back:active {
+  background: var(--surface-3);
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}

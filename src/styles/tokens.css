@@ -1,0 +1,75 @@
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: #08090b;
+  --bg-grid: rgba(255, 255, 255, 0.028);
+  --surface-0: #0d0e11;
+  --surface-1: #121418;
+  --surface-2: #171a1f;
+  --surface-3: #1d2027;
+  --surface-hover: #1f232a;
+
+  /* Lines */
+  --line: #22252c;
+  --line-soft: #1a1d22;
+  --line-strong: #30343c;
+
+  /* Ink */
+  --text: #e8eaee;
+  --text-2: #a4aab5;
+  --text-3: #737a86;
+  --text-4: #555b66;
+
+  /* Accent: one restrained blue, plus semantic status colors */
+  --accent: #6b9bff;
+  --accent-strong: #8fb3ff;
+  --accent-soft: rgba(107, 155, 255, 0.12);
+  --accent-line: rgba(107, 155, 255, 0.38);
+
+  --ok: #3ccf91;
+  --ok-soft: rgba(60, 207, 145, 0.12);
+  --warn: #e8b04a;
+  --warn-soft: rgba(232, 176, 74, 0.12);
+  --err: #f0716b;
+  --err-soft: rgba(240, 113, 107, 0.12);
+
+  /* Node categories in architecture graphs */
+  --cat-compute: #6b9bff;
+  --cat-storage: #e8b04a;
+  --cat-identity: #b38cff;
+  --cat-data: #3fc6c0;
+  --cat-client: #a4aab5;
+  --cat-security: #f08a6b;
+
+  /* Chart series (validated dark-mode categorical slots) */
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+
+  /* Type */
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Geometry */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --topbar-h: 36px;
+  --dock-h: 64px;
+
+  --shadow-window: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.65),
+    0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 16px 48px -8px rgba(0, 0, 0, 0.7);
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+  }
+}

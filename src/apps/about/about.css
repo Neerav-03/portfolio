@@ -1,0 +1,179 @@
+.ab.is-strike {
+  animation: strike 380ms cubic-bezier(0.3, 0, 0.2, 1);
+}
+@keyframes strike {
+  15% {
+    transform: translateX(-5px);
+  }
+  35% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+}
+
+.ab-mods {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+.ab-mod {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-style: dashed;
+  transition: border-color var(--dur);
+}
+.ab-mod.is-loaded {
+  border-style: solid;
+  border-color: var(--line-strong);
+  animation: fade-in 240ms var(--ease-out);
+}
+.ab-mod__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-4);
+}
+.ab-mod__file {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.ab-mod__name {
+  font-size: 15px;
+}
+.ab-mod__role {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.ab-load {
+  justify-self: start;
+  margin-top: 6px;
+  font-size: 11.5px;
+}
+.ab-mod__body {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+.ab-stat {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.ab-stat span {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--text-3);
+}
+.ab-text {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+.ab-puzzle {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-0);
+  justify-items: start;
+}
+
+.ab-teams {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+.ab-teams span {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  animation: team-in 260ms var(--ease-out) both;
+}
+@keyframes team-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.ab-belt {
+  position: relative;
+  height: 14px;
+  border-radius: 3px;
+  background: #e9e6df;
+  overflow: visible;
+}
+.ab-belt__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: #0b0b0c;
+  box-shadow: inset 0 0 0 1px #3a3a3e;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 800ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+.ab-belt.is-tied .ab-belt__fill {
+  transform: scaleX(1);
+}
+.ab-belt__knot {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 18px;
+  height: 24px;
+  margin-left: -9px;
+  border-radius: 3px;
+  background: #0b0b0c;
+  box-shadow: inset 0 0 0 1px #3a3a3e;
+  opacity: 0;
+  transform: scale(0.4) rotate(-20deg);
+  transition:
+    opacity 200ms ease 700ms,
+    transform 320ms cubic-bezier(0.3, 1.6, 0.5, 1) 700ms;
+}
+.ab-belt.is-tied .ab-belt__knot {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+.ab-kiai {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  font-size: 22px;
+  color: var(--text-4);
+  animation: kiai 900ms var(--ease-out) both;
+  pointer-events: none;
+}
+.ab-mod {
+  position: relative;
+}
+@keyframes kiai {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+    color: var(--text);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@container (max-width: 720px) {
+  .ab-mods {
+    grid-template-columns: 1fr;
+  }
+}

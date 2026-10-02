@@ -1,0 +1,134 @@
+.eng {
+  height: 100%;
+}
+.eng-count {
+  font-size: 10px;
+  color: var(--text-4);
+}
+.eng-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 16px;
+  align-items: start;
+}
+.eng-matrix-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-0);
+}
+.eng-matrix {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.eng-matrix th,
+.eng-matrix td {
+  border-bottom: 1px solid var(--line-soft);
+  text-align: center;
+}
+.eng-matrix thead th {
+  position: sticky;
+  top: 0;
+  padding: 8px 4px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+  font-weight: 500;
+}
+.eng-matrix .eng-skillcol {
+  text-align: left;
+  padding-left: 12px;
+}
+.eng-ctx {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.eng-ctx .mono {
+  font-size: 9.5px;
+  color: var(--text-4);
+}
+.eng-ctx:hover span:first-child {
+  color: var(--accent-strong);
+}
+.eng-matrix tbody th {
+  text-align: left;
+  font-weight: 400;
+}
+.eng-skill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 12px;
+  text-align: left;
+  color: var(--text);
+}
+.is-listed .eng-skill {
+  color: var(--text-2);
+}
+.eng-skill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--text-3);
+}
+.eng-skill__dot.is-used {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.eng-matrix tbody tr:hover,
+.eng-matrix tr.is-sel {
+  background: var(--surface-2);
+}
+.eng-matrix tr.is-sel .eng-skill {
+  color: var(--accent-strong);
+}
+.eng-matrix .is-hover {
+  background: rgba(107, 155, 255, 0.05);
+}
+.eng-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.eng-detail {
+  position: sticky;
+  top: 0;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+.eng-detail__name {
+  font-size: 16px;
+}
+.eng-detail__note {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.eng-detail__uses {
+  list-style: none;
+  margin: 0 -6px;
+}
+.eng-interests {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+@container (max-width: 700px) {
+  .eng-layout {
+    grid-template-columns: 1fr;
+  }
+  .eng-detail {
+    position: static;
+  }
+}

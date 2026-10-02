@@ -1,0 +1,144 @@
+.edu-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 10px;
+}
+.edu-cell {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px;
+}
+.edu-cell--gauge {
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+.edu-cell__text {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.edu-big {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 4px 0 2px;
+}
+
+.edu-gauge {
+  width: 120px;
+  height: 120px;
+}
+.edu-gauge circle {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.edu-gauge__track {
+  stroke: var(--surface-3);
+}
+.edu-gauge__value {
+  stroke: var(--accent);
+  animation: gauge-in 900ms var(--ease-out);
+}
+@keyframes gauge-in {
+  from {
+    stroke-dasharray: 0 400;
+  }
+}
+.edu-gauge__num {
+  fill: var(--text);
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 500;
+}
+.edu-gauge__scale {
+  fill: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.edu-pct {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.edu-pct__bar {
+  height: 6px;
+  border-radius: 6px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.edu-pct__bar span {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+  border-radius: 6px;
+  animation: grow 900ms var(--ease-out);
+}
+@keyframes grow {
+  from {
+    width: 0;
+  }
+}
+
+.edu-log {
+  position: relative;
+  display: grid;
+  list-style: none;
+}
+.edu-log li {
+  display: grid;
+  grid-template-columns: 80px 20px 160px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+  animation: fade-in 300ms var(--ease-out) both;
+}
+.edu-log__when {
+  font-size: 11.5px;
+  color: var(--text-3);
+}
+.edu-log__node {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--surface-0);
+  justify-self: center;
+}
+.edu-log li:last-child .edu-log__node {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+.edu-log__what {
+  font-size: 13px;
+  font-weight: 500;
+}
+.edu-log__detail {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+@container (max-width: 680px) {
+  .edu-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .edu-cell--gauge {
+    grid-column: 1 / -1;
+  }
+  .edu-log li {
+    grid-template-columns: 70px 16px 1fr;
+  }
+  .edu-log__detail {
+    grid-column: 3;
+  }
+}
+@container (max-width: 420px) {
+  .edu-grid {
+    grid-template-columns: 1fr;
+  }
+}
