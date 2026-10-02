@@ -13,11 +13,15 @@ test('recruiter view gives the 30-second summary', async ({ page, os }) => {
   await expect(page.getByRole('img', { name: /portrait of neerav daswani/i })).toBeVisible();
 });
 
-test('system desktop loads with identity and modules', async ({ page, os }) => {
+test('system desktop: identity, app menu with PLAY, the game and engineering modules', async ({ page, os }) => {
   await os.visit();
   await expect(page.getByRole('heading', { level: 1, name: 'Neerav Daswani' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /explore the netradyne systems/i })).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'Applications' }).getByRole('button', { name: 'PLAY' }),
+  ).toBeVisible();
+  await expect(page.getByRole('application', { name: /neerav quest/i })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Engineering modules' })).toBeVisible();
+  await expect(page.getByText(/explore the netradyne systems/i)).toHaveCount(0);
 });
 
 test('page has no horizontal scroll', async ({ page, os }) => {

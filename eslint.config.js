@@ -17,8 +17,9 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
-      // Scrollable regions must be keyboard-focusable (WCAG 2.1.1); a labelled role="region" is the accepted pattern.
-      'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['tabpanel', 'region'], tags: [] }],
+      // Scrollable regions must be keyboard-focusable (WCAG 2.1.1); a labelled role="region" is the accepted
+      // pattern. role="application" is the game surface, which needs focus for its keyboard controls.
+      'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['tabpanel', 'region', 'application'], tags: [] }],
     },
   },
   {

@@ -27,6 +27,7 @@ export interface TermContext {
   setTerminal: (open: boolean) => void;
   setMode: (mode: 'system' | 'recruiter') => void;
   previewResume: () => void;
+  play: () => void;
   history: string[];
 }
 
@@ -61,6 +62,7 @@ const NOOP_CTX: TermContext = {
   setTerminal: () => undefined,
   setMode: () => undefined,
   previewResume: () => undefined,
+  play: () => undefined,
 };
 
 const commands: Record<string, CommandDef> = {
@@ -250,6 +252,14 @@ const commands: Record<string, CommandDef> = {
         ],
       };
     },
+  },
+
+  play: {
+    description: 'Play Neerav Quest (a tiny platformer)',
+    run: (_a, ctx) => ({
+      lines: [dim('loading quest.exe …  ← → move · Space jump · Esc pause')],
+      after: () => ctx.play(),
+    }),
   },
 
   clear: {

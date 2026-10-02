@@ -11,6 +11,7 @@ function ctx(): TermContext & { [K in keyof TermContext]: TermContext[K] } {
     setTerminal: vi.fn(),
     setMode: vi.fn(),
     previewResume: vi.fn(),
+    play: vi.fn(),
   };
 }
 

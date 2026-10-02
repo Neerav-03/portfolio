@@ -22,7 +22,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } },
       testIgnore: /mobile.spec.ts/,
     },
-    { name: 'mobile', use: { ...devices['Pixel 7'] }, testMatch: /mobile\.spec\.ts|a11y\.spec\.ts|smoke\.spec\.ts/ },
+    {
+      name: 'mobile',
+      use: { ...devices['Pixel 7'] },
+      testMatch: /mobile\.spec\.ts|a11y\.spec\.ts|smoke\.spec\.ts|quest\.spec\.ts/,
+    },
   ],
   webServer: {
     // Test the production build exactly as it will be deployed.

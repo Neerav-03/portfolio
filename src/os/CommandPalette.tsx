@@ -8,7 +8,7 @@ import './palette.css';
 
 /** Mounted only while open, so every open starts with an empty query. */
 export default function CommandPalette() {
-  const { state, setPalette, openApp, setTerminal, setMode, closeApp, copyEmail, previewResume } = useOS();
+  const { state, setPalette, openApp, setTerminal, setMode, closeApp, copyEmail, previewResume, playQuest } = useOS();
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +56,7 @@ export default function CommandPalette() {
     setMode,
     copyEmail,
     previewResume,
+    play: playQuest,
     closeAll: () => state.windows.forEach((w) => closeApp(w.id)),
   };
 

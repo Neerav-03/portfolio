@@ -3,6 +3,7 @@
 The portfolio of **Neerav Daswani**, Software Engineer, built as a small operating system. The OS handles navigation, and the content is interactive explanations of the engineering work on the resume.
 
 - **System mode** has a boot sequence, a desktop with draggable windows, a dock, a terminal (<kbd>Ctrl</kbd> + <kbd>`</kbd>) and a command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>).
+- **Neerav Quest** is a ~45-second original platformer in the centre of the desktop. Its `{ }` blocks reveal resume facts, and the finish flag leads to the resume. Start it with PLAY in the app menu or dock, `play` in the terminal, or from the palette.
 - **Recruiter mode** is a fast single-page summary with the resume download, GitHub and LinkedIn.
 - **Light and dark themes**: the toggle is in the top bar, and you can also switch from the palette or with `theme light | dark | system` in the terminal. Dark is the default; to follow the OS instead, set `DEFAULT_THEME_PREFERENCE` in `src/lib/theme.ts` (and the matching default in the inline script in `index.html`).
 - **Resume preview** sits next to every download. System mode opens it in the Resume window and recruiter mode in a modal. Browsers without an inline PDF viewer (most Android phones) get pages rendered by a lazy-loaded pdf.js.
@@ -35,15 +36,16 @@ Theme colours are design tokens in `src/styles/tokens.css`: dark under `:root`, 
 
 The conceptual diagrams are defined next to their apps:
 
-| What                              | Where                                     |
-| --------------------------------- | ----------------------------------------- |
-| Netradyne system map              | `src/apps/experience/netradyneGraph.ts`   |
-| DRP / DAL / Encryption modules    | `src/apps/experience/*Module.tsx`         |
-| EXL dashboard (illustrative data) | `src/apps/experience/ExlModule.tsx`       |
-| MovieMate / Doc-Link              | `src/apps/projects/`                      |
-| Skill → evidence matrix           | `src/apps/engineering/EngineeringApp.tsx` |
-| Terminal commands                 | `src/terminal/commands.ts`                |
-| Command palette entries           | `src/os/commands.ts`                      |
+| What                               | Where                                                 |
+| ---------------------------------- | ----------------------------------------------------- |
+| Netradyne system map               | `src/apps/experience/netradyneGraph.ts`               |
+| DRP / DAL / Encryption modules     | `src/apps/experience/*Module.tsx`                     |
+| EXL dashboard (illustrative data)  | `src/apps/experience/ExlModule.tsx`                   |
+| MovieMate / Doc-Link               | `src/apps/projects/`                                  |
+| Skill → evidence matrix            | `src/apps/engineering/EngineeringApp.tsx`             |
+| Terminal commands                  | `src/terminal/commands.ts`                            |
+| Command palette entries            | `src/os/commands.ts`                                  |
+| Neerav Quest (level, physics, art) | `src/game/` (facts come from `src/data/portfolio.ts`) |
 
 ## Project layout
 

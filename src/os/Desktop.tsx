@@ -1,4 +1,5 @@
-import { ArrowUpRight, Download, Eye, Mail } from 'lucide-react';
+import { Download, Eye, Gamepad2, Mail } from 'lucide-react';
+import { lazy, Suspense } from 'react';
 import { codingProfiles, education, exams, profile, resumeUrl } from '../data/portfolio';
 import { preloadApp } from '../apps/registry';
 import { Avatar } from '../components/Avatar';
@@ -9,7 +10,7 @@ import { FEATURED_MODULES } from './featuredModules';
 import { useOS } from './useOS';
 
 export function IdentityCard() {
-  const { copyEmail, openApp, previewResume } = useOS();
+  const { copyEmail, previewResume } = useOS();
   return (
     <section className="widget identity" aria-labelledby="identity-name">
       <div className="widget__head">
@@ -79,17 +80,6 @@ export function IdentityCard() {
           <Mail size={13} /> Email
         </button>
       </div>
-      <button
-        className="identity__start"
-        onClick={() => openApp('experience', { view: 'netradyne' })}
-        onMouseEnter={() => preloadApp('experience')}
-      >
-        <span>
-          <span className="label">Start here</span>
-          <span className="identity__start-title">Explore the Netradyne systems</span>
-        </span>
-        <ArrowUpRight size={16} />
-      </button>
     </section>
   );
 }
@@ -155,8 +145,10 @@ function TelemetryWidget() {
   );
 }
 
+const Quest = lazy(() => import('../game/Quest'));
+
 export function DesktopIcons() {
-  const { openApp, setTerminal } = useOS();
+  const { openApp, setTerminal, playQuest } = useOS();
   return (
     <nav className="desk-icons" aria-label="Applications">
       {DESKTOP_APPS.map((id) => {
@@ -180,6 +172,12 @@ export function DesktopIcons() {
         <span className="desk-icon__glyph desk-icon__glyph--term mono">&gt;_</span>
         <span className="desk-icon__label mono">TERMINAL</span>
       </button>
+      <button className="desk-icon" onClick={playQuest}>
+        <span className="desk-icon__glyph desk-icon__glyph--play">
+          <Gamepad2 size={20} strokeWidth={1.6} />
+        </span>
+        <span className="desk-icon__label mono">PLAY</span>
+      </button>
     </nav>
   );
 }
@@ -187,9 +185,16 @@ export function DesktopIcons() {
 export function Desktop() {
   return (
     <main id="main" className="desktop">
-      <DesktopIcons />
-      <aside className="desk-widgets" aria-label="Overview">
+      <div className="desk-left">
         <IdentityCard />
+        <DesktopIcons />
+      </div>
+      <div className="desk-center">
+        <Suspense fallback={<div className="quest-placeholder" aria-hidden="true" />}>
+          <Quest />
+        </Suspense>
+      </div>
+      <aside className="desk-right" aria-label="Engineering overview">
         <ModulesWidget />
         <TelemetryWidget />
       </aside>
