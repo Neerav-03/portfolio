@@ -40,6 +40,7 @@ export type OSAction =
   | { type: 'close'; id: AppId }
   | { type: 'remove'; id: AppId }
   | { type: 'minimize'; id: AppId }
+  | { type: 'showDesktop' }
   | { type: 'focus'; id: AppId }
   | { type: 'toggleMax'; id: AppId }
   | { type: 'bounds'; id: AppId; x: number; y: number; w?: number; h?: number }
@@ -114,6 +115,9 @@ export function osReducer(state: OSState, action: OSAction): OSState {
         ...state,
         windows: state.windows.map((w) => (w.id === action.id ? { ...w, minimized: true } : w)),
       };
+    case 'showDesktop':
+      if (state.windows.every((w) => w.minimized)) return state;
+      return { ...state, windows: state.windows.map((w) => (w.minimized ? w : { ...w, minimized: true })) };
     case 'focus': {
       const top = state.windows[state.windows.length - 1];
       if (top?.id === action.id && !top.minimized) return state;

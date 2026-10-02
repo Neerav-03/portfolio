@@ -1,11 +1,11 @@
-import { Briefcase, FolderGit2, House, Search, SquareTerminal } from 'lucide-react';
+import { Briefcase, FolderGit2, Gamepad2, House, Search, SquareTerminal } from 'lucide-react';
 import type { AppId } from '../data/types';
 import { preloadApp } from '../apps/registry';
 import { APP_META, DOCK_APPS } from './appMeta';
 import { useOS } from './useOS';
 
 export function Dock() {
-  const { state, openApp, focusApp, setTerminal } = useOS();
+  const { state, openApp, focusApp, setTerminal, playQuest } = useOS();
   const visible = state.windows.filter((w) => !w.minimized && !w.closing);
   const topId = visible[visible.length - 1]?.id;
 
@@ -51,6 +51,14 @@ export function Dock() {
               Terminal
             </span>
             {state.terminalOpen && <span className="dock__run" aria-hidden="true" />}
+          </button>
+        </li>
+        <li>
+          <button className="dock__item" onClick={playQuest} aria-label="Play Neerav Quest">
+            <Gamepad2 size={19} strokeWidth={1.6} />
+            <span className="dock__tip mono" aria-hidden="true">
+              Play
+            </span>
           </button>
         </li>
       </ul>

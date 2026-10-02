@@ -32,6 +32,8 @@ const ALLOWED: Record<string, string[]> = {
   'apps/code/CodeApp.tsx': ['#8a8f98', '#4caf6a', '#3fb8b0', '#5b8cff', '#b07cf0', '#e8a24a', '#e8b04a'],
   // White text on dark heat cells.
   'components/MiniCharts.tsx': ['#fff'],
+  // Neerav Quest's pixel character: a person's colours don't change with the UI theme.
+  'game/sprites.ts': ['#2a211c', '#e3b28c', '#b9925a', '#eef4fb', '#e8e8ea', '#3a3f4b', '#343a46', '#1b1d22'],
   // Browser UI colour for each theme (mirrors --bg).
   'lib/theme.ts': ['#08090b', '#f4f5f7'],
 };
@@ -145,6 +147,8 @@ describe('pointer events', () => {
   const ALLOWED_POINTER_NONE = [
     'apps/about/about.css | .ab-kiai',
     'components/charts.css | .chart__tip',
+    // Touch-pad container lets taps through to the game; its buttons re-enable pointer events.
+    'game/quest.css | .quest__pad',
     'os/boot.css | .boot.is-leaving',
     'os/shell.css | .dock__tip',
     'os/shell.css | .toast-region',

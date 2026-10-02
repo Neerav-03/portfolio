@@ -65,7 +65,7 @@ function renderLine(line: Line, key: number) {
 }
 
 export default function Terminal() {
-  const { state, setTerminal, openApp, setMode, previewResume } = useOS();
+  const { state, setTerminal, openApp, setMode, previewResume, playQuest } = useOS();
   const open = state.terminalOpen;
   const [entries, setEntries] = useState<Entry[]>([{ id: 0, lines: WELCOME }]);
   const [value, setValue] = useState('');
@@ -101,6 +101,10 @@ export default function Terminal() {
       openApp,
       setMode,
       previewResume,
+      play: () => {
+        returnFocus.current = null;
+        playQuest();
+      },
       history: nextHistory,
       setTerminal: (o) => {
         if (!o) returnFocus.current = null;

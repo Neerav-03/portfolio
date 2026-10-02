@@ -1,0 +1,205 @@
+.quest {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 760px;
+  container-type: inline-size;
+}
+
+.quest__bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 4px;
+}
+.quest__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--text-2);
+}
+.quest__hud {
+  display: flex;
+  gap: 14px;
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-3);
+}
+.quest__hud strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.quest__icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+}
+.quest__icon:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.quest__stage {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-0);
+  box-shadow: var(--shadow-window);
+  outline: none;
+}
+.quest__stage:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--accent),
+    var(--shadow-window);
+}
+.quest__stage.is-playing {
+  cursor: none;
+}
+.quest__canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 336 / 192;
+  image-rendering: pixelated;
+}
+
+.quest__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 16px;
+  text-align: center;
+  animation: fade-in 200ms var(--ease-out);
+}
+.quest__stage.is-title .quest__overlay {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--surface-0) 82%, transparent), transparent);
+}
+.quest__overlay--dim {
+  background: color-mix(in srgb, var(--surface-0) 80%, transparent);
+}
+.quest__logo {
+  font-size: clamp(18px, 3.4vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--text);
+  text-shadow: 3px 3px 0 var(--accent-soft);
+}
+.quest__tag {
+  max-width: 44ch;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.quest__keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+.quest__cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.quest__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  min-height: 52px;
+  align-content: flex-start;
+}
+.quest__facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-3);
+}
+.quest__facts li .mono {
+  font-size: 11px;
+}
+.quest__facts li.is-on {
+  border-style: solid;
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--text);
+  animation: fade-in 260ms var(--ease-out);
+}
+.quest__facts li.is-on .mono {
+  color: var(--accent-strong);
+}
+
+/* Touch controls (phones / tablets) */
+.quest__pad {
+  display: none;
+}
+@media (pointer: coarse) {
+  .quest__pad {
+    position: absolute;
+    inset: auto 8px 8px;
+    display: flex;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .quest__stage:not(.is-playing) .quest__pad {
+    display: none;
+  }
+  .quest__key {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface-2) 85%, transparent);
+    color: var(--text);
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+  }
+  .quest__key--jump {
+    margin-left: auto;
+    width: 56px;
+  }
+}
+
+@media (max-width: 760px) {
+  .quest__hud span:last-child {
+    display: none;
+  }
+}
+
+/* Small game widths (phones, narrow windows): keep the overlay inside the canvas. */
+@container (max-width: 520px) {
+  .quest__overlay {
+    gap: 8px;
+    padding: 10px;
+  }
+  .quest__tag {
+    font-size: 12px;
+  }
+  .quest__keys {
+    display: none;
+  }
+  .quest__cta .btn {
+    height: 26px;
+    padding: 0 8px;
+    font-size: 11.5px;
+  }
+}

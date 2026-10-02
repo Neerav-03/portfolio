@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, type ReactNode } from 'react';
 import type { AppId, AppParams } from '../data/types';
 import { profile } from '../data/portfolio';
+import { launchQuest } from '../game/launch';
 import { buildHash, parseHash } from '../lib/route';
 import { readStore, STORE_KEYS, writeStore } from '../lib/storage';
 import { osReducer, type Mode, type OSState } from './osState';
@@ -53,6 +54,16 @@ export function OSProvider({ children }: { children: ReactNode }) {
       setPalette: (open) => dispatch({ type: 'palette', open }),
       setMode: (mode) => dispatch({ type: 'mode', mode }),
       previewResume: () => dispatch({ type: 'previewResume', viewport: viewport() }),
+      showDesktop: () => {
+        dispatch({ type: 'mode', mode: 'system' });
+        dispatch({ type: 'showDesktop' });
+      },
+      playQuest: () => {
+        dispatch({ type: 'mode', mode: 'system' });
+        dispatch({ type: 'showDesktop' });
+        dispatch({ type: 'terminal', open: false });
+        launchQuest();
+      },
       closeResumePreview: () => dispatch({ type: 'closeResumePreview' }),
       toast: (text) => dispatch({ type: 'toast', text }),
       copyEmail: () => {

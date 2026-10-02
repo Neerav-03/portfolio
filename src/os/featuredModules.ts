@@ -11,13 +11,6 @@ export interface ModuleLink {
 
 export const FEATURED_MODULES: ModuleLink[] = [
   {
-    code: 'SYS',
-    title: 'Netradyne system map',
-    sub: 'Conceptual platform overview',
-    app: 'experience',
-    params: { view: 'netradyne' },
-  },
-  {
     code: 'DRP',
     title: 'Data Retention Policy',
     sub: '5 S3 duration tiers · 62–403 days',

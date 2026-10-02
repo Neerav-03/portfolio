@@ -105,27 +105,52 @@
 .desktop {
   position: absolute;
   inset: var(--topbar-h) 0 0 0;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr) 300px;
+  gap: 24px;
+  padding: 20px;
+}
+.desk-left,
+.desk-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.desk-center {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding-bottom: 84px; /* shortcut hints + dock */
+}
+.quest-placeholder {
+  width: 100%;
+  max-width: 760px;
+  aspect-ratio: 336 / 192;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-0);
 }
 
 .desk-icons {
-  position: absolute;
-  top: 20px;
-  left: 16px;
-  bottom: 96px;
   display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(auto-fill, 92px);
-  gap: 4px 8px;
-  align-content: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--widget-bg);
 }
 .desk-icon {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 92px;
-  height: 92px;
+  gap: 7px;
+  height: 76px;
   border-radius: var(--radius-lg);
   color: var(--text-2);
   transition: background var(--dur-fast);
@@ -155,25 +180,13 @@
   font-weight: 600;
   color: var(--ok);
 }
+.desk-icon__glyph--play {
+  color: var(--accent-strong);
+  border-color: var(--accent-line);
+}
 .desk-icon__label {
   font-size: 10px;
   letter-spacing: 0.08em;
-}
-
-.desk-widgets {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  bottom: 96px;
-  width: 340px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-.desk-widgets::-webkit-scrollbar {
-  display: none;
 }
 
 .widget {
@@ -240,45 +253,20 @@
   flex-wrap: wrap;
   gap: 6px;
 }
+.identity__resume .identity__actions {
+  flex-wrap: nowrap;
+}
+.identity__resume .btn {
+  flex: 1;
+}
 .identity__resume {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  display: grid;
+  gap: 8px;
   margin-bottom: 10px;
   padding: 8px 8px 8px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-0);
-}
-.identity__start {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius);
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-  text-align: left;
-  transition: background var(--dur-fast);
-}
-.identity__start:hover {
-  background: var(--accent-hover);
-}
-.identity__start > span {
-  display: grid;
-  gap: 1px;
-}
-.identity__start .label {
-  color: var(--accent);
-}
-.identity__start-title {
-  font-size: 13px;
-  font-weight: 550;
-  color: var(--text);
 }
 
 .modules {
@@ -500,9 +488,24 @@
 }
 
 /* ---------------- Responsive ---------------- */
+@media (max-width: 1280px) {
+  .desktop {
+    grid-template-columns: 280px minmax(0, 1fr) 280px;
+    gap: 18px;
+  }
+}
+/* Not enough room for three columns: the right column goes (modules stay one click away in Experience). */
 @media (max-width: 1100px) {
-  .desk-widgets {
-    width: 300px;
+  .desktop {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+  .desk-right {
+    display: none;
+  }
+}
+@media (max-width: 1000px) {
+  .desk-left {
+    padding-bottom: 84px;
   }
 }
 
@@ -533,22 +536,20 @@
     flex-direction: column;
     gap: 16px;
   }
-  .desk-widgets {
-    position: static;
-    width: auto;
+  .desk-left,
+  .desk-right {
+    display: flex;
     overflow: visible;
-    order: -1;
+  }
+  .desk-left {
+    display: contents;
   }
   .desk-icons {
-    position: static;
-    grid-auto-flow: row;
-    grid-template-rows: none;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
+    grid-template-columns: repeat(3, 1fr);
   }
-  .desk-icon {
-    width: auto;
-    height: 84px;
+  .desk-center {
+    display: block;
+    padding-bottom: 0;
   }
   .desk-hint,
   .dock {

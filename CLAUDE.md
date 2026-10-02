@@ -47,6 +47,7 @@ CI (`.github/workflows/ci.yml`) runs the full suite, including e2e and accessibi
 - `src/apps/<app>/`: one folder per app, lazy-loaded via `src/apps/registry.ts`
 - `src/components/`: `ArchitectureGraph`, `MiniCharts`, `ResumeViewer`, `Avatar`, shared bits
 - `src/terminal/commands.ts`: terminal commands (every command is exercised by a test)
+- `src/game/`: Neerav Quest. `engine.ts` is pure logic and `level.ts` builds the map. A test bot must still be able to finish the level after any edit, and every `{ }` block must stay reachable. The facts come from `src/data/portfolio.ts`, and all art is original (no Nintendo assets or names)
 - `src/lib/theme.ts`: theme store. Keep its default in sync with the inline script in `index.html` (a test checks this)
 - `e2e/`: Playwright specs. `fixtures.ts` fails any test whose page logs an error
 

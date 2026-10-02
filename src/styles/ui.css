@@ -319,6 +319,10 @@
   overflow-y: auto;
   container-type: inline-size;
 }
+/* Single-pane apps (no sidebar): the window body is the one and only scroller. */
+.win__body > .app__main {
+  overflow: visible;
+}
 .app__pad {
   padding: 20px 24px 32px;
 }

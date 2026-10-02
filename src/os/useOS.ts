@@ -15,6 +15,10 @@ export interface OSApi {
   setTerminal: (open: boolean) => void;
   setPalette: (open: boolean) => void;
   setMode: (mode: Mode) => void;
+  /** Minimise every window (and leave recruiter mode) so the desktop is visible. */
+  showDesktop: () => void;
+  /** Show the desktop and start Neerav Quest. */
+  playQuest: () => void;
   previewResume: () => void;
   closeResumePreview: () => void;
   toast: (text: string) => void;

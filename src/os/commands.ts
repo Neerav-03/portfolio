@@ -4,6 +4,7 @@ import {
   Copy,
   Download,
   Eye,
+  Gamepad2,
   KeyRound,
   LayoutGrid,
   Monitor,
@@ -31,6 +32,7 @@ export interface CommandContext {
   closeAll: () => void;
   copyEmail: () => void;
   previewResume: () => void;
+  play: () => void;
 }
 
 export interface PaletteCommand {
@@ -134,6 +136,15 @@ export function buildCommands(): PaletteCommand[] {
   }));
 
   const actions: PaletteCommand[] = [
+    {
+      id: 'play',
+      group: 'Actions',
+      title: 'Play Neerav Quest',
+      sub: 'A 45-second platformer through the resume',
+      keywords: 'game mario platformer fun',
+      icon: Gamepad2,
+      run: (c) => c.play(),
+    },
     {
       id: 'preview-resume',
       group: 'Actions',
