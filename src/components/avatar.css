@@ -1,0 +1,28 @@
+.avatar {
+  position: relative;
+  flex: none;
+  display: inline-block;
+}
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 28%;
+  object-fit: cover;
+  background: var(--surface-3);
+  box-shadow:
+    0 0 0 1px var(--line-strong),
+    0 6px 16px -10px rgba(0, 0, 0, 0.5);
+}
+.avatar__status {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 26%;
+  height: 26%;
+  min-width: 9px;
+  min-height: 9px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 2.5px var(--surface-1);
+}

@@ -1,44 +1,32 @@
-import { ArrowUpRight, Download, Mail } from 'lucide-react';
-import type { AppId, AppParams } from '../data/types';
+import { ArrowUpRight, Download, Eye, Mail } from 'lucide-react';
 import { codingProfiles, education, exams, profile, resumeUrl } from '../data/portfolio';
 import { preloadApp } from '../apps/registry';
+import { Avatar } from '../components/Avatar';
 import { GitHubIcon, LinkedInIcon } from '../components/BrandIcons';
 import { MOD_LABEL } from '../lib/platform';
 import { APP_META, DESKTOP_APPS } from './appMeta';
-import { useOS } from './OSContext';
-
-interface ModuleLink {
-  code: string;
-  title: string;
-  sub: string;
-  app: AppId;
-  params?: AppParams;
-}
-
-export const FEATURED_MODULES: ModuleLink[] = [
-  { code: 'SYS', title: 'Netradyne system map', sub: 'Conceptual platform overview', app: 'experience', params: { view: 'netradyne' } },
-  { code: 'DRP', title: 'Data Retention Policy', sub: '5 S3 duration tiers · 62–403 days', app: 'experience', params: { view: 'drp' } },
-  { code: 'DAL', title: 'GDPR Data Access Levels', sub: '4-tier config-driven privacy', app: 'experience', params: { view: 'dal' } },
-  { code: 'TEK', title: 'Encryption migration', sub: 'AWS CMK → tenant-specific keys', app: 'experience', params: { view: 'encryption' } },
-  { code: 'EXL', title: 'Price monitoring dashboard', sub: '5 stores · 2 years · 857 products', app: 'experience', params: { view: 'exl' } },
-  { code: 'MM', title: 'MovieMate', sub: 'Next.js · Flask · TF-IDF', app: 'projects', params: { view: 'moviemate' } },
-  { code: 'DL', title: 'Doc-Link', sub: 'React · Express · MongoDB', app: 'projects', params: { view: 'doclink' } },
-];
+import { FEATURED_MODULES } from './featuredModules';
+import { useOS } from './useOS';
 
 export function IdentityCard() {
-  const { copyEmail, openApp } = useOS();
+  const { copyEmail, openApp, previewResume } = useOS();
   return (
     <section className="widget identity" aria-labelledby="identity-name">
       <div className="widget__head">
         <span className="label">Identity</span>
         <span className="label">neerav@neerav-os</span>
       </div>
-      <h1 id="identity-name" className="identity__name">
-        {profile.name}
-      </h1>
-      <p className="identity__role">
-        {profile.title} · <strong>{profile.company}</strong>
-      </p>
+      <div className="identity__who">
+        <Avatar size={52} />
+        <div>
+          <h1 id="identity-name" className="identity__name">
+            {profile.name}
+          </h1>
+          <p className="identity__role">
+            {profile.title} · <strong>{profile.company}</strong>
+          </p>
+        </div>
+      </div>
       <dl className="kv">
         <div>
           <dt>edu</dt>
@@ -61,21 +49,41 @@ export function IdentityCard() {
           </dd>
         </div>
       </dl>
+      <div className="identity__resume">
+        <span className="label">Resume</span>
+        <div className="identity__actions">
+          <button
+            className="btn btn--primary btn--sm"
+            onClick={previewResume}
+            onMouseEnter={() => preloadApp('resume')}
+          >
+            <Eye size={13} /> Preview
+          </button>
+          <a className="btn btn--sm" href={resumeUrl} download={profile.resumeFile}>
+            <Download size={13} /> Download
+          </a>
+        </div>
+      </div>
       <div className="identity__actions">
-        <a className="btn btn--primary btn--sm" href={resumeUrl} download>
-          <Download size={13} /> Resume
-        </a>
         <a className="btn btn--sm" href={profile.links.github} target="_blank" rel="noreferrer">
           <GitHubIcon size={13} /> GitHub
         </a>
         <a className="btn btn--sm" href={profile.links.linkedin} target="_blank" rel="noreferrer">
           <LinkedInIcon size={13} /> LinkedIn
         </a>
-        <button className="btn btn--sm btn--ghost" onClick={copyEmail} aria-label={`Copy email address ${profile.email}`}>
+        <button
+          className="btn btn--sm btn--ghost"
+          onClick={copyEmail}
+          aria-label={`Copy email address ${profile.email}`}
+        >
           <Mail size={13} /> Email
         </button>
       </div>
-      <button className="identity__start" onClick={() => openApp('experience', { view: 'netradyne' })} onMouseEnter={() => preloadApp('experience')}>
+      <button
+        className="identity__start"
+        onClick={() => openApp('experience', { view: 'netradyne' })}
+        onMouseEnter={() => preloadApp('experience')}
+      >
         <span>
           <span className="label">Start here</span>
           <span className="identity__start-title">Explore the Netradyne systems</span>
@@ -99,7 +107,11 @@ function ModulesWidget() {
       <ul className="modules">
         {FEATURED_MODULES.map((m) => (
           <li key={m.code}>
-            <button className="module-row" onClick={() => openApp(m.app, m.params)} onMouseEnter={() => preloadApp(m.app)}>
+            <button
+              className="module-row"
+              onClick={() => openApp(m.app, m.params)}
+              onMouseEnter={() => preloadApp(m.app)}
+            >
               <span className="module-row__code mono">{m.code}</span>
               <span className="module-row__text">
                 <span className="module-row__title">{m.title}</span>
@@ -150,7 +162,13 @@ export function DesktopIcons() {
       {DESKTOP_APPS.map((id) => {
         const meta = APP_META[id];
         return (
-          <button key={id} className="desk-icon" onClick={() => openApp(id)} onMouseEnter={() => preloadApp(id)} onFocus={() => preloadApp(id)}>
+          <button
+            key={id}
+            className="desk-icon"
+            onClick={() => openApp(id)}
+            onMouseEnter={() => preloadApp(id)}
+            onFocus={() => preloadApp(id)}
+          >
             <span className="desk-icon__glyph">
               <meta.icon size={20} strokeWidth={1.6} />
             </span>

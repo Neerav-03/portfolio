@@ -79,15 +79,7 @@ export const APP_META: Record<AppId, AppMeta> = {
   },
 };
 
-export const DESKTOP_APPS: AppId[] = [
-  'experience',
-  'projects',
-  'engineering',
-  'code',
-  'education',
-  'about',
-  'resume',
-];
+export const DESKTOP_APPS: AppId[] = ['experience', 'projects', 'engineering', 'code', 'education', 'about', 'resume'];
 
 export const DOCK_APPS: AppId[] = ['experience', 'projects', 'engineering', 'code', 'education', 'resume'];
 

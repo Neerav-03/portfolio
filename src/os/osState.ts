@@ -20,8 +20,12 @@ export interface WindowState {
 export interface OSState {
   /** Ordered by z-index: last element is on top. */
   windows: WindowState[];
+  /** True once any window has opened (the URL hash is left alone until then). */
+  hasOpenedWindow: boolean;
   terminalOpen: boolean;
   paletteOpen: boolean;
+  /** Resume preview modal (recruiter mode; system mode uses the Resume window). */
+  resumePreviewOpen: boolean;
   mode: Mode;
   toast: { id: number; text: string } | null;
 }
@@ -44,6 +48,8 @@ export type OSAction =
   | { type: 'terminal'; open: boolean }
   | { type: 'palette'; open: boolean }
   | { type: 'mode'; mode: Mode }
+  | { type: 'previewResume'; viewport: Viewport }
+  | { type: 'closeResumePreview' }
   | { type: 'toast'; text: string }
   | { type: 'clearToast'; id: number };
 
@@ -94,7 +100,7 @@ export function osReducer(state: OSState, action: OSAction): OSState {
         params: action.params ?? {},
         nonce: 0,
       };
-      return { ...state, windows: [...state.windows, win] };
+      return { ...state, hasOpenedWindow: true, windows: [...state.windows, win] };
     }
     case 'close':
       return {
@@ -116,17 +122,13 @@ export function osReducer(state: OSState, action: OSAction): OSState {
     case 'toggleMax':
       return {
         ...state,
-        windows: state.windows.map((w) =>
-          w.id === action.id ? { ...w, maximized: !w.maximized } : w,
-        ),
+        windows: state.windows.map((w) => (w.id === action.id ? { ...w, maximized: !w.maximized } : w)),
       };
     case 'bounds':
       return {
         ...state,
         windows: state.windows.map((w) =>
-          w.id === action.id
-            ? { ...w, x: action.x, y: action.y, w: action.w ?? w.w, h: action.h ?? w.h }
-            : w,
+          w.id === action.id ? { ...w, x: action.x, y: action.y, w: action.w ?? w.w, h: action.h ?? w.h } : w,
         ),
       };
     case 'view':
@@ -160,7 +162,14 @@ export function osReducer(state: OSState, action: OSAction): OSState {
     case 'palette':
       return { ...state, paletteOpen: action.open, terminalOpen: action.open ? false : state.terminalOpen };
     case 'mode':
-      return { ...state, mode: action.mode, paletteOpen: false };
+      return { ...state, mode: action.mode, paletteOpen: false, resumePreviewOpen: false };
+    case 'previewResume':
+      // System mode previews in the Resume window; recruiter mode has no windows, so use the modal.
+      return state.mode === 'system'
+        ? osReducer({ ...state, paletteOpen: false }, { type: 'open', id: 'resume', viewport: action.viewport })
+        : { ...state, paletteOpen: false, terminalOpen: false, resumePreviewOpen: true };
+    case 'closeResumePreview':
+      return { ...state, resumePreviewOpen: false };
     case 'toast':
       return { ...state, toast: { id: (state.toast?.id ?? 0) + 1, text: action.text } };
     case 'clearToast':

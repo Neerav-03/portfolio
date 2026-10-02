@@ -3,11 +3,15 @@ import {
   Box,
   Copy,
   Download,
+  Eye,
   KeyRound,
   LayoutGrid,
+  Monitor,
+  Moon,
   ShieldCheck,
   Store,
   SquareTerminal,
+  Sun,
   Timer,
   UserRoundCheck,
   Workflow,
@@ -17,6 +21,7 @@ import {
 import type { AppId, AppParams } from '../data/types';
 import { codingProfiles, profile, projects, resumeUrl } from '../data/portfolio';
 import { downloadFile } from '../lib/fuzzy';
+import { setThemePreference } from '../lib/theme';
 import { APP_META, DESKTOP_APPS } from './appMeta';
 
 export interface CommandContext {
@@ -25,6 +30,7 @@ export interface CommandContext {
   setMode: (mode: 'system' | 'recruiter') => void;
   closeAll: () => void;
   copyEmail: () => void;
+  previewResume: () => void;
 }
 
 export interface PaletteCommand {
@@ -60,11 +66,51 @@ export function buildCommands(): PaletteCommand[] {
   });
 
   const modules: PaletteCommand[] = [
-    { id: 'netradyne', group: 'Experience', title: 'Netradyne', sub: 'Software Engineer · system map', keywords: 'work job video platform', icon: Workflow, run: (c) => c.openApp('experience', { view: 'netradyne' }) },
-    { id: 'drp', group: 'Experience', title: 'DRP — Data Retention Policy', sub: 'Banded S3 tiers, lifecycle expiry, presigned-URL gating', keywords: 'retention s3 lifecycle expiry bucket', icon: Timer, run: (c) => c.openApp('experience', { view: 'drp' }) },
-    { id: 'dal', group: 'Experience', title: 'DAL — GDPR Data Access Levels', sub: '4-tier config-driven privacy framework', keywords: 'gdpr privacy access audit', icon: ShieldCheck, run: (c) => c.openApp('experience', { view: 'dal' }) },
-    { id: 'encryption', group: 'Experience', title: 'Encryption — CMK → TEK migration', sub: 'Tenant-specific local encryption', keywords: 'kms cmk tek keys crypto', icon: KeyRound, run: (c) => c.openApp('experience', { view: 'encryption' }) },
-    { id: 'exl', group: 'Experience', title: 'EXL — Price monitoring dashboard', sub: 'Decision Analyst Intern', keywords: 'rfm elasticity retail pricing', icon: Store, run: (c) => c.openApp('experience', { view: 'exl' }) },
+    {
+      id: 'netradyne',
+      group: 'Experience',
+      title: 'Netradyne',
+      sub: 'Software Engineer · system map',
+      keywords: 'work job video platform',
+      icon: Workflow,
+      run: (c) => c.openApp('experience', { view: 'netradyne' }),
+    },
+    {
+      id: 'drp',
+      group: 'Experience',
+      title: 'DRP — Data Retention Policy',
+      sub: 'Banded S3 tiers, lifecycle expiry, presigned-URL gating',
+      keywords: 'retention s3 lifecycle expiry bucket',
+      icon: Timer,
+      run: (c) => c.openApp('experience', { view: 'drp' }),
+    },
+    {
+      id: 'dal',
+      group: 'Experience',
+      title: 'DAL — GDPR Data Access Levels',
+      sub: '4-tier config-driven privacy framework',
+      keywords: 'gdpr privacy access audit',
+      icon: ShieldCheck,
+      run: (c) => c.openApp('experience', { view: 'dal' }),
+    },
+    {
+      id: 'encryption',
+      group: 'Experience',
+      title: 'Encryption — CMK → TEK migration',
+      sub: 'Tenant-specific local encryption',
+      keywords: 'kms cmk tek keys crypto',
+      icon: KeyRound,
+      run: (c) => c.openApp('experience', { view: 'encryption' }),
+    },
+    {
+      id: 'exl',
+      group: 'Experience',
+      title: 'EXL — Price monitoring dashboard',
+      sub: 'Decision Analyst Intern',
+      keywords: 'rfm elasticity retail pricing',
+      icon: Store,
+      run: (c) => c.openApp('experience', { view: 'exl' }),
+    },
   ];
 
   const projectCmds: PaletteCommand[] = projects.map((p) => ({
@@ -88,18 +134,116 @@ export function buildCommands(): PaletteCommand[] {
   }));
 
   const actions: PaletteCommand[] = [
-    { id: 'download-resume', group: 'Actions', title: 'Download resume', sub: 'PDF', keywords: 'cv', icon: Download, run: () => downloadFile(resumeUrl, profile.resumeFile) },
-    { id: 'copy-email', group: 'Actions', title: 'Copy email address', sub: profile.email, keywords: 'contact mail', icon: Copy, run: (c) => c.copyEmail() },
-    { id: 'recruiter', group: 'Actions', title: 'Switch to Recruiter mode', sub: 'Fast, single-page summary', keywords: 'simple summary hr', icon: UserRoundCheck, run: (c) => c.setMode('recruiter') },
-    { id: 'system', group: 'Actions', title: 'Switch to System mode', sub: 'Full interactive OS', keywords: 'desktop os', icon: LayoutGrid, run: (c) => c.setMode('system') },
+    {
+      id: 'preview-resume',
+      group: 'Actions',
+      title: 'Preview resume',
+      sub: 'View the PDF in place',
+      keywords: 'cv pdf view open',
+      icon: Eye,
+      run: (c) => c.previewResume(),
+    },
+    {
+      id: 'download-resume',
+      group: 'Actions',
+      title: 'Download resume',
+      sub: 'PDF',
+      keywords: 'cv pdf',
+      icon: Download,
+      run: () => downloadFile(resumeUrl, profile.resumeFile),
+    },
+    {
+      id: 'copy-email',
+      group: 'Actions',
+      title: 'Copy email address',
+      sub: profile.email,
+      keywords: 'contact mail',
+      icon: Copy,
+      run: (c) => c.copyEmail(),
+    },
+    {
+      id: 'recruiter',
+      group: 'Actions',
+      title: 'Switch to Recruiter mode',
+      sub: 'Fast, single-page summary',
+      keywords: 'simple summary hr',
+      icon: UserRoundCheck,
+      run: (c) => c.setMode('recruiter'),
+    },
+    {
+      id: 'system',
+      group: 'Actions',
+      title: 'Switch to System mode',
+      sub: 'Full interactive OS',
+      keywords: 'desktop os',
+      icon: LayoutGrid,
+      run: (c) => c.setMode('system'),
+    },
     { id: 'close-all', group: 'Actions', title: 'Close all windows', icon: XSquare, run: (c) => c.closeAll() },
+    {
+      id: 'theme-light',
+      group: 'Appearance',
+      title: 'Switch to light theme',
+      keywords: 'appearance mode colour color day',
+      icon: Sun,
+      run: () => setThemePreference('light'),
+    },
+    {
+      id: 'theme-dark',
+      group: 'Appearance',
+      title: 'Switch to dark theme',
+      keywords: 'appearance mode colour color night',
+      icon: Moon,
+      run: () => setThemePreference('dark'),
+    },
+    {
+      id: 'theme-system',
+      group: 'Appearance',
+      title: 'Use system theme',
+      sub: 'Follow the OS light / dark setting',
+      keywords: 'appearance mode auto os',
+      icon: Monitor,
+      run: () => setThemePreference('system'),
+    },
   ];
 
   const links: PaletteCommand[] = [
-    { id: 'link-github', group: 'Links', title: 'GitHub', sub: profile.links.github.replace('https://', ''), icon: ArrowUpRight, external: true, run: () => openUrl(profile.links.github) },
-    { id: 'link-linkedin', group: 'Links', title: 'LinkedIn', sub: 'linkedin.com/in/neerav-daswani', icon: ArrowUpRight, external: true, run: () => openUrl(profile.links.linkedin) },
-    ...codingProfiles.map((cp) => ({ id: `link-${cp.id}`, group: 'Links', title: `${cp.platform} profile`, sub: cp.url.replace('https://', ''), icon: ArrowUpRight, external: true, run: () => openUrl(cp.url) })),
-    ...projects.map((p) => ({ id: `link-${p.id}`, group: 'Links', title: `${p.name} repository`, sub: p.repo.replace('https://', ''), icon: ArrowUpRight, external: true, run: () => openUrl(p.repo) })),
+    {
+      id: 'link-github',
+      group: 'Links',
+      title: 'GitHub',
+      sub: profile.links.github.replace('https://', ''),
+      icon: ArrowUpRight,
+      external: true,
+      run: () => openUrl(profile.links.github),
+    },
+    {
+      id: 'link-linkedin',
+      group: 'Links',
+      title: 'LinkedIn',
+      sub: 'linkedin.com/in/neerav-daswani',
+      icon: ArrowUpRight,
+      external: true,
+      run: () => openUrl(profile.links.linkedin),
+    },
+    ...codingProfiles.map((cp) => ({
+      id: `link-${cp.id}`,
+      group: 'Links',
+      title: `${cp.platform} profile`,
+      sub: cp.url.replace('https://', ''),
+      icon: ArrowUpRight,
+      external: true,
+      run: () => openUrl(cp.url),
+    })),
+    ...projects.map((p) => ({
+      id: `link-${p.id}`,
+      group: 'Links',
+      title: `${p.name} repository`,
+      sub: p.repo.replace('https://', ''),
+      icon: ArrowUpRight,
+      external: true,
+      run: () => openUrl(p.repo),
+    })),
   ];
 
   return [...modules, ...apps, ...projectCmds, ...code, ...actions, ...links];

@@ -1,64 +1,71 @@
 import { CornerDownLeft, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { fuzzyScore } from '../lib/fuzzy';
+import { useTheme } from '../lib/theme';
 import { buildCommands, type CommandContext, type PaletteCommand } from './commands';
-import { useOS } from './OSContext';
+import { useOS } from './useOS';
 import './palette.css';
 
+/** Mounted only while open, so every open starts with an empty query. */
 export default function CommandPalette() {
-  const { state, setPalette, openApp, setTerminal, setMode, closeApp, copyEmail } = useOS();
-  const open = state.paletteOpen;
+  const { state, setPalette, openApp, setTerminal, setMode, closeApp, copyEmail, previewResume } = useOS();
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const returnFocus = useRef<HTMLElement | null>(null);
-  const commands = useMemo(buildCommands, []);
+  const restoreFocus = useRef(true);
+  const commands = useMemo(() => buildCommands(), []);
+  const { preference, theme } = useTheme();
 
   const results = useMemo(() => {
-    const visible = commands.filter((c) => (state.mode === 'recruiter' ? c.id !== 'recruiter' : c.id !== 'system'));
+    const hidden = new Set([
+      state.mode === 'recruiter' ? 'recruiter' : 'system',
+      preference === 'system' ? 'theme-system' : `theme-${theme}`,
+    ]);
+    const visible = commands.filter((c) => !hidden.has(c.id));
     if (!query.trim()) return visible;
     return visible
-      .map((c) => ({ c, s: Math.max(fuzzyScore(query, c.title) * 1.2, fuzzyScore(query, `${c.sub ?? ''} ${c.keywords ?? ''} ${c.group}`) * 0.7) }))
+      .map((c) => ({
+        c,
+        s: Math.max(
+          fuzzyScore(query, c.title) * 1.2,
+          fuzzyScore(query, `${c.sub ?? ''} ${c.keywords ?? ''} ${c.group}`) * 0.7,
+        ),
+      }))
       .filter((r) => r.s > 0)
       .sort((a, b) => b.s - a.s)
       .map((r) => r.c);
-  }, [commands, query, state.mode]);
+  }, [commands, query, state.mode, preference, theme]);
 
+  // Focus the input on open; hand focus back to where it was on close.
   useEffect(() => {
-    if (open) {
-      returnFocus.current = document.activeElement as HTMLElement | null;
-      setQuery('');
-      setActive(0);
-      requestAnimationFrame(() => inputRef.current?.focus());
-    } else {
-      returnFocus.current?.focus?.({ preventScroll: true });
-    }
-  }, [open]);
-
-  useEffect(() => setActive(0), [query]);
+    const previous = document.activeElement as HTMLElement | null;
+    inputRef.current?.focus();
+    return () => {
+      if (restoreFocus.current) previous?.focus?.({ preventScroll: true });
+    };
+  }, []);
 
   useEffect(() => {
     listRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [active]);
-
-  if (!open) return null;
 
   const ctx: CommandContext = {
     openApp,
     setTerminal,
     setMode,
     copyEmail,
+    previewResume,
     closeAll: () => state.windows.forEach((w) => closeApp(w.id)),
   };
 
   const run = (cmd: PaletteCommand) => {
-    returnFocus.current = null;
+    restoreFocus.current = false;
     setPalette(false);
     cmd.run(ctx);
   };
 
-  const onKeyDown = (e: KeyboardEvent) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setActive((a) => (results.length ? (a + 1) % results.length : 0));
@@ -74,6 +81,7 @@ export default function CommandPalette() {
       e.stopPropagation();
       setPalette(false);
     } else if (e.key === 'Tab') {
+      // Focus stays in the combobox; options are reached with the arrow keys.
       e.preventDefault();
     }
   };
@@ -90,14 +98,22 @@ export default function CommandPalette() {
   const activeId = results[active] ? `cmd-${results[active].id}` : undefined;
 
   return (
-    <div className="palette-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setPalette(false)}>
-      <div className="palette" role="dialog" aria-modal="true" aria-label="Command palette" onKeyDown={onKeyDown}>
+    <div
+      className="palette-backdrop"
+      role="presentation"
+      onMouseDown={(e) => e.target === e.currentTarget && setPalette(false)}
+    >
+      <div className="palette" role="dialog" aria-modal="true" aria-label="Command palette">
         <div className="palette__search">
           <Search size={15} aria-hidden="true" />
           <input
             ref={inputRef}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setActive(0);
+            }}
+            onKeyDown={onKeyDown}
             placeholder="Search apps, systems, projects, actions…"
             role="combobox"
             aria-expanded="true"
@@ -110,8 +126,12 @@ export default function CommandPalette() {
           />
           <span className="kbd">Esc</span>
         </div>
+        {results.length === 0 && (
+          <p className="palette__empty mono" role="status">
+            No matches for “{query}”. Try “drp”, “codeforces” or “resume”.
+          </p>
+        )}
         <ul id="palette-list" ref={listRef} className="palette__list" role="listbox" aria-label="Commands">
-          {results.length === 0 && <li className="palette__empty mono">No matches for “{query}”. Try “drp”, “codeforces” or “resume”.</li>}
           {groups.map((g) => (
             <li key={g.name} role="presentation">
               <div className="palette__group label" role="presentation">
@@ -119,6 +139,8 @@ export default function CommandPalette() {
               </div>
               <ul role="group" aria-label={g.name}>
                 {g.items.map(({ cmd, index }) => (
+                  // Keyboard selection is handled by the combobox input (aria-activedescendant).
+                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events
                   <li
                     key={cmd.id}
                     id={`cmd-${cmd.id}`}

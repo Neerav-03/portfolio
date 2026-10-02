@@ -4,7 +4,7 @@ import { parseHash } from './lib/route';
 import { Boot } from './os/Boot';
 import { Desktop } from './os/Desktop';
 import { Dock, MobileNav, Toast } from './os/Dock';
-import { useOS } from './os/OSContext';
+import { useOS } from './os/useOS';
 import { TopBar } from './os/TopBar';
 import { WindowLayer } from './os/WindowLayer';
 import { RecruiterView } from './recruiter/RecruiterView';
@@ -13,6 +13,7 @@ import './os/shell.css';
 const loadTerminal = () => import('./terminal/Terminal');
 const loadPalette = () => import('./os/CommandPalette');
 const Terminal = lazy(loadTerminal);
+const ResumePreview = lazy(() => import('./os/ResumePreview').then((m) => ({ default: m.ResumePreview })));
 const CommandPalette = lazy(loadPalette);
 
 export function App() {
@@ -22,7 +23,6 @@ export function App() {
   const [initialRoute] = useState(() => parseHash(window.location.hash));
   const [booted, setBooted] = useState(() => state.mode === 'recruiter');
   const [terminalLoaded, setTerminalLoaded] = useState(false);
-  const [paletteLoaded, setPaletteLoaded] = useState(false);
 
   const onBootDone = useCallback(() => {
     setBooted(true);
@@ -58,12 +58,8 @@ export function App() {
     };
   }, [booted]);
 
-  useEffect(() => {
-    if (state.terminalOpen) setTerminalLoaded(true);
-  }, [state.terminalOpen]);
-  useEffect(() => {
-    if (state.paletteOpen) setPaletteLoaded(true);
-  }, [state.paletteOpen]);
+  // The terminal stays mounted after its first open so history and output survive.
+  if (state.terminalOpen && !terminalLoaded) setTerminalLoaded(true);
 
   const focusMain = () => {
     const main = document.getElementById('main');
@@ -88,10 +84,9 @@ export function App() {
         </div>
       )}
 
-      <Suspense fallback={null}>
-        {terminalLoaded && <Terminal />}
-        {paletteLoaded && <CommandPalette />}
-      </Suspense>
+      <Suspense fallback={null}>{terminalLoaded && <Terminal />}</Suspense>
+      <Suspense fallback={null}>{state.paletteOpen && <CommandPalette />}</Suspense>
+      <Suspense fallback={null}>{state.resumePreviewOpen && <ResumePreview />}</Suspense>
       <Toast />
 
       {!booted && <Boot onDone={onBootDone} />}

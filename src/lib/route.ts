@@ -2,10 +2,7 @@ import type { AppId, AppParams } from '../data/types';
 import { isAppId } from '../os/appMeta';
 import type { Mode } from '../os/osState';
 
-export type Route =
-  | { kind: 'recruiter' }
-  | { kind: 'app'; id: AppId; params: AppParams }
-  | { kind: 'desktop' };
+export type Route = { kind: 'recruiter' } | { kind: 'app'; id: AppId; params: AppParams } | { kind: 'desktop' };
 
 /** Hash routes: #/recruiter, #/experience, #/experience/drp, ... */
 export function parseHash(hash: string): Route {

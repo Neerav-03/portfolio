@@ -1,10 +1,11 @@
 import { Lock, Mail, Unlock } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { education, extracurriculars, profile } from '../../data/portfolio';
 import type { Extracurricular } from '../../data/types';
+import { Avatar } from '../../components/Avatar';
 import { GitHubIcon, LinkedInIcon } from '../../components/BrandIcons';
 import { useReducedMotion } from '../../hooks/useMediaQuery';
-import { useOS } from '../../os/OSContext';
+import { useOS } from '../../os/useOS';
 import type { AppProps } from '../registry';
 import './about.css';
 
@@ -14,11 +15,7 @@ function useCountUp(target: number, run: boolean, ms = 900) {
   const reduced = useReducedMotion();
   const [v, setV] = useState(0);
   useEffect(() => {
-    if (!run) return;
-    if (reduced) {
-      setV(target);
-      return;
-    }
+    if (!run || reduced) return;
     let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
@@ -29,7 +26,7 @@ function useCountUp(target: number, run: boolean, ms = 900) {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [target, run, ms, reduced]);
-  return v;
+  return reduced && run ? target : v;
 }
 
 function Aptiquest({ data }: { data: Extracurricular }) {
@@ -110,27 +107,29 @@ export default function AboutApp({ params, nonce, onView }: AppProps) {
   const { copyEmail } = useOS();
   const [loaded, setLoaded] = useState<Set<ModId>>(() => new Set(params.view === 'karate' ? ['karate'] : []));
   const [strike, setStrike] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const [seenNonce, setSeenNonce] = useState(nonce);
 
-  useEffect(() => {
-    if (params.view === 'karate' && nonce > 0) setLoaded((s) => new Set(s).add('karate'));
-  }, [nonce, params.view]);
+  if (nonce !== seenNonce) {
+    setSeenNonce(nonce);
+    if (params.view === 'karate') setLoaded((s) => new Set(s).add('karate'));
+  }
 
   useEffect(() => {
     if (loaded.has('karate')) onView('karate');
   }, [loaded, onView]);
 
-  const onStrike = useRef(() => {
+  const onStrike = useCallback(() => {
     setStrike(true);
     window.setTimeout(() => setStrike(false), 420);
-  }).current;
+  }, []);
 
   const load = (id: ModId) => setLoaded((s) => new Set(s).add(id));
 
   return (
-    <div ref={rootRef} className={`app__main ab${strike ? ' is-strike' : ''}`}>
+    <div className={`app__main ab${strike ? ' is-strike' : ''}`}>
       <div className="app__pad stack-lg">
-        <header className="xp-head">
+        <header className="ab-head">
+          <Avatar size={84} />
           <div>
             <p className="label">about.md</p>
             <h2 className="page-title">{profile.name}</h2>
@@ -173,7 +172,11 @@ export default function AboutApp({ params, nonce, onView }: AppProps) {
                 <article key={x.id} className={`ab-mod panel${isLoaded ? ' is-loaded' : ''}`}>
                   <div className="ab-mod__head">
                     <span className="mono ab-mod__file">{x.id}.ko</span>
-                    {isLoaded ? <Unlock size={13} className="t-ok" aria-hidden="true" /> : <Lock size={13} aria-hidden="true" />}
+                    {isLoaded ? (
+                      <Unlock size={13} className="t-ok" aria-hidden="true" />
+                    ) : (
+                      <Lock size={13} aria-hidden="true" />
+                    )}
                   </div>
                   <h4 className="ab-mod__name">{x.name}</h4>
                   <p className="ab-mod__role mono">{x.role}</p>

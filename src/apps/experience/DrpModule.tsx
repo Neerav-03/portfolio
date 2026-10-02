@@ -2,15 +2,9 @@ import { Play } from 'lucide-react';
 import { useId, useState } from 'react';
 import { ArchitectureGraph, type GraphEdge, type GraphNode } from '../../components/ArchitectureGraph';
 import { Conceptual } from '../../components/Conceptual';
+import { drpBucketTiersDays } from '../../data/portfolio';
 
-/** Only the endpoints of the tier range are documented (62 and 403 days). */
-const TIERS = [
-  { id: 1, days: 62 as number | null },
-  { id: 2, days: null },
-  { id: 3, days: null },
-  { id: 4, days: null },
-  { id: 5, days: 403 as number | null },
-];
+const TIERS = drpBucketTiersDays.map((days, i) => ({ id: i + 1, days }));
 
 const CONCEPTS = [
   'day-exact expiry',
@@ -44,7 +38,7 @@ function bandNodes(tier: number): GraphNode[] {
     ...TIERS.map((t, i) => ({
       id: `b${t.id}`,
       label: `BAND ${t.id}`,
-      sub: t.days ? `${t.days} days` : 'intermediate',
+      sub: `${t.days}-day lifecycle`,
       x: 380,
       y: 34 + i * 58,
       w: 150,
@@ -74,7 +68,7 @@ export function DrpModule() {
 
   const t = TIERS[tier - 1];
   const expired = age >= 100;
-  const ageText = t.days ? `day ${Math.round((age / 100) * t.days)} of ${t.days}` : `${age}% of retention window`;
+  const ageText = `day ${Math.round((age / 100) * t.days)} of ${t.days}`;
 
   const request = () => {
     setLog((prev) =>
@@ -98,9 +92,9 @@ export function DrpModule() {
           <p className="label">Module · DRP</p>
           <h3 className="xp-module-title">Data Retention Policy</h3>
           <p className="prose">
-            Configurable video retention enforced across the backend platform&rsquo;s core services &mdash; covering uploads and
-            derived video artifacts &mdash; backed by banded S3 bucket infrastructure with per-day lifecycle expiry rules and
-            cross-environment IAM.
+            Configurable video retention enforced across the backend platform&rsquo;s core services &mdash; covering
+            uploads and derived video artifacts &mdash; backed by banded S3 bucket infrastructure with per-day lifecycle
+            expiry rules and cross-environment IAM.
           </p>
         </div>
         <div className="chips">
@@ -142,9 +136,15 @@ export function DrpModule() {
             </span>
             <div className="seg" role="radiogroup" aria-labelledby="tier-label">
               {TIERS.map((x) => (
-                <button key={x.id} className="seg__btn" role="radio" aria-checked={tier === x.id} onClick={() => setTier(x.id)}>
-                  T{x.id}
-                  {x.days ? ` · ${x.days}d` : ''}
+                <button
+                  key={x.id}
+                  className="seg__btn"
+                  role="radio"
+                  aria-checked={tier === x.id}
+                  aria-label={`Tier ${x.id}, ${x.days} days`}
+                  onClick={() => setTier(x.id)}
+                >
+                  {x.days}d
                 </button>
               ))}
             </div>
@@ -154,10 +154,20 @@ export function DrpModule() {
               Expiry mode
             </span>
             <div className="seg" role="radiogroup" aria-labelledby="mode-label">
-              <button className="seg__btn" role="radio" aria-checked={mode === 'exact'} onClick={() => setMode('exact')}>
+              <button
+                className="seg__btn"
+                role="radio"
+                aria-checked={mode === 'exact'}
+                onClick={() => setMode('exact')}
+              >
                 day-exact
               </button>
-              <button className="seg__btn" role="radio" aria-checked={mode === 'month'} onClick={() => setMode('month')}>
+              <button
+                className="seg__btn"
+                role="radio"
+                aria-checked={mode === 'month'}
+                onClick={() => setMode('month')}
+              >
                 month-rounded
               </button>
             </div>
@@ -198,7 +208,9 @@ export function DrpModule() {
           <div className="drp-age__row">
             <span className={`drp-status mono ${expired ? 'is-err' : 'is-ok'}`}>
               <span className={`dot ${expired ? 'dot--err' : 'dot--ok'}`} />
-              {expired ? 'past retention — presigned URL gated · lifecycle rule expires object' : 'within retention — presigned URL can be issued'}
+              {expired
+                ? 'past retention — presigned URL gated · lifecycle rule expires object'
+                : 'within retention — presigned URL can be issued'}
             </span>
             <button className="btn btn--sm" onClick={request}>
               <Play size={12} /> Request playback
@@ -216,23 +228,32 @@ export function DrpModule() {
         </div>
 
         <Conceptual>
-          Illustrative model of the documented concepts. Only the 62–403 day range of the five tiers is documented, so
-          intermediate tier durations are not shown. Bucket names, tag keys and APIs are intentionally omitted.
+          Illustrative model of the documented concepts, using the five bucket tiers (62, 93, 124, 217 and 403 days).
+          Bucket names, tag keys and APIs are intentionally omitted.
         </Conceptual>
       </section>
 
       <section className="xp-facts" aria-label="Key properties">
         <div className="panel xp-fact">
           <p className="label">Zero object migration</p>
-          <p>Banded buckets with per-day lifecycle rules enable automatic, cost-controlled video expiry without migrating existing objects.</p>
+          <p>
+            Banded buckets with per-day lifecycle rules enable automatic, cost-controlled video expiry without migrating
+            existing objects.
+          </p>
         </div>
         <div className="panel xp-fact">
           <p className="label">Presigned-URL gating</p>
-          <p>Access to video is gated at the point of issuing presigned URLs, so retention is enforced on reads, not only by deletion.</p>
+          <p>
+            Access to video is gated at the point of issuing presigned URLs, so retention is enforced on reads, not only
+            by deletion.
+          </p>
         </div>
         <div className="panel xp-fact">
           <p className="label">Lifecycle tagging</p>
-          <p>Uploads and derived video artifacts are tagged for S3 lifecycle handling, so expiry is carried out by storage rules.</p>
+          <p>
+            Uploads and derived video artifacts are tagged for S3 lifecycle handling, so expiry is carried out by
+            storage rules.
+          </p>
         </div>
       </section>
     </div>
@@ -246,7 +267,14 @@ function ExpiryStrip({ mode }: { mode: 'exact' | 'month' }) {
   const monthPos = 2 / 3; // the month boundary
   const pos = mode === 'exact' ? exactPos : monthPos;
   return (
-    <div className="drp-strip panel" aria-label={mode === 'exact' ? 'Day-exact: expiry falls on the exact computed day' : 'Month-rounded: expiry aligns to a month boundary'}>
+    <div
+      className="drp-strip panel"
+      aria-label={
+        mode === 'exact'
+          ? 'Day-exact: expiry falls on the exact computed day'
+          : 'Month-rounded: expiry aligns to a month boundary'
+      }
+    >
       <div className="drp-strip__head">
         <span className="label">{mode === 'exact' ? 'day-exact' : 'month-rounded'}</span>
         <span className="drp-strip__desc">

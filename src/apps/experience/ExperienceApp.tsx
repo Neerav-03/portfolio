@@ -13,7 +13,11 @@ export type ExpView = 'netradyne' | 'drp' | 'dal' | 'encryption' | 'exl';
 const VIEWS: ExpView[] = ['netradyne', 'drp', 'dal', 'encryption', 'exl'];
 const DEPTH: Record<ExpView, number> = { netradyne: 0, drp: 1, dal: 1, encryption: 1, exl: 0 };
 
-const NAV: { company: string; dates: string; items: { view: ExpView; code: string; label: string; icon: LucideIcon }[] }[] = [
+const NAV: {
+  company: string;
+  dates: string;
+  items: { view: ExpView; code: string; label: string; icon: LucideIcon }[];
+}[] = [
   {
     company: 'Netradyne',
     dates: 'Jul 2025 – Present',
@@ -33,27 +37,36 @@ const NAV: { company: string; dates: string; items: { view: ExpView; code: strin
 
 const toView = (v?: string): ExpView => (VIEWS.includes(v as ExpView) ? (v as ExpView) : 'netradyne');
 
+type Motion = 'zoom-in' | 'zoom-out' | 'fade';
+
+/** Zoom in when going deeper (overview → module), out when coming back. */
+function transition(prev: { view: ExpView; motion: Motion }, next: ExpView) {
+  if (next === prev.view) return prev;
+  const d = DEPTH[next] - DEPTH[prev.view];
+  return { view: next, motion: (d > 0 ? 'zoom-in' : d < 0 ? 'zoom-out' : 'fade') as Motion };
+}
+
 export default function ExperienceApp({ params, nonce, onView }: AppProps) {
-  const [view, setView] = useState<ExpView>(() => toView(params.view));
-  const [motion, setMotion] = useState<'zoom-in' | 'zoom-out' | 'fade'>('fade');
+  const [nav, setNav] = useState<{ view: ExpView; motion: Motion }>(() => ({
+    view: toView(params.view),
+    motion: 'fade',
+  }));
+  const { view, motion } = nav;
+  const [seenNonce, setSeenNonce] = useState(nonce);
   const mainRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef(view);
-  viewRef.current = view;
 
-  const go = (next: ExpView) => {
-    if (next === viewRef.current) return;
-    const d = DEPTH[next] - DEPTH[viewRef.current];
-    setMotion(d > 0 ? 'zoom-in' : d < 0 ? 'zoom-out' : 'fade');
-    setView(next);
-    mainRef.current?.scrollTo({ top: 0 });
-  };
+  const go = (next: ExpView) => setNav((prev) => transition(prev, next));
 
-  // External navigation (palette, terminal, links).
+  // External navigation (palette, terminal, links) bumps the nonce.
+  if (nonce !== seenNonce) {
+    setSeenNonce(nonce);
+    setNav((prev) => transition(prev, toView(params.view)));
+  }
+
   useEffect(() => {
-    if (nonce > 0) go(toView(params.view));
-  }, [nonce]);
-
-  useEffect(() => onView(view), [view, onView]);
+    onView(view);
+    mainRef.current?.scrollTo({ top: 0 });
+  }, [view, onView]);
 
   const netradyne = experience[0];
   const exl = experience[1];

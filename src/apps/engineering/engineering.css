@@ -88,7 +88,7 @@
   color: var(--accent-strong);
 }
 .eng-matrix .is-hover {
-  background: rgba(107, 155, 255, 0.05);
+  background: var(--accent-softer);
 }
 .eng-dot {
   display: inline-block;

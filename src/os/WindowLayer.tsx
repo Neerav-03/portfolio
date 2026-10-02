@@ -1,6 +1,6 @@
 import { Suspense, useCallback } from 'react';
 import { APP_COMPONENTS } from '../apps/registry';
-import { useOS } from './OSContext';
+import { useOS } from './useOS';
 import type { WindowState } from './osState';
 import { Window } from './Window';
 

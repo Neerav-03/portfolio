@@ -9,7 +9,7 @@ const PAD = 28;
 export function Boot({ onDone }: { onDone: () => void }) {
   const reduced = useReducedMotion();
   // Returning visitors get a compressed boot.
-  const returning = useRef(readStore(STORE_KEYS.booted) === '1').current;
+  const [returning] = useState(() => readStore(STORE_KEYS.booted) === '1');
   const tick = reduced ? 0 : returning ? 55 : 150;
   const [shown, setShown] = useState(reduced ? STEPS.length + 1 : 0);
   const [leaving, setLeaving] = useState(false);
@@ -47,7 +47,12 @@ export function Boot({ onDone }: { onDone: () => void }) {
   const progress = Math.min(1, shown / (STEPS.length + 1));
 
   return (
-    <div className={`boot${leaving ? ' is-leaving' : ''}`} role="status" aria-live="polite" aria-label="NEERAV OS is starting">
+    <div
+      className={`boot${leaving ? ' is-leaving' : ''}`}
+      role="status"
+      aria-live="polite"
+      aria-label="NEERAV OS is starting"
+    >
       <div className="boot__term mono">
         <p className="boot__title">
           NEERAV OS <span className="boot__ver">v1.0</span>

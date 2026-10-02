@@ -1,36 +1,67 @@
+/*
+ * Design tokens. Dark is the default theme; light overrides live under
+ * :root[data-theme='light']. The theme attribute is set before first paint
+ * by the inline script in index.html and kept in sync by src/lib/theme.ts.
+ */
 :root {
   color-scheme: dark;
 
   /* Surfaces */
   --bg: #08090b;
   --bg-grid: rgba(255, 255, 255, 0.028);
+  --bg-glow: rgba(107, 155, 255, 0.07);
   --surface-0: #0d0e11;
   --surface-1: #121418;
   --surface-2: #171a1f;
   --surface-3: #1d2027;
   --surface-hover: #1f232a;
+  --hover-wash: rgba(255, 255, 255, 0.035);
+
+  /* Translucent chrome (top bar, dock, widgets, overlays) */
+  --chrome-bg: rgba(10, 11, 13, 0.86);
+  --chrome-solid: rgba(10, 11, 13, 0.96);
+  --dock-bg: rgba(16, 18, 21, 0.88);
+  --widget-bg: #111317;
+  --term-bg: #0a0b0d;
+  --dim-opacity: 0.32;
+  --backdrop: rgba(4, 5, 6, 0.55);
+  --glyph-top: var(--surface-2);
+  --glyph-bottom: var(--surface-1);
+  --glyph-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 14px -8px rgba(0, 0, 0, 0.8);
+  --pdf-bg: #2a2c31;
 
   /* Lines */
   --line: #22252c;
   --line-soft: #1a1d22;
   --line-strong: #30343c;
+  --line-hover: #3b404a;
 
-  /* Ink */
+  /* Ink: every text tone meets WCAG AA (4.5:1) on every surface in its theme. */
   --text: #e8eaee;
   --text-2: #a4aab5;
-  --text-3: #737a86;
-  --text-4: #555b66;
+  --text-3: #8b929e;
+  --text-4: #858b96;
 
-  /* Accent: one restrained blue, plus semantic status colors */
+  /* Primary button (inverted ink) */
+  --btn-primary-bg: #e8eaee;
+  --btn-primary-fg: #0b0c0e;
+  --btn-primary-hover: #ffffff;
+
+  /* Accent: one restrained blue. --accent-strong is the accent used for text. */
   --accent: #6b9bff;
   --accent-strong: #8fb3ff;
   --accent-soft: rgba(107, 155, 255, 0.12);
+  --accent-softer: rgba(107, 155, 255, 0.05);
+  --accent-hover: rgba(107, 155, 255, 0.18);
   --accent-line: rgba(107, 155, 255, 0.38);
+  --selection: rgba(107, 155, 255, 0.32);
 
+  /* Status */
   --ok: #3ccf91;
   --ok-soft: rgba(60, 207, 145, 0.12);
   --warn: #e8b04a;
   --warn-soft: rgba(232, 176, 74, 0.12);
+  --warn-line: rgba(232, 176, 74, 0.35);
   --err: #f0716b;
   --err-soft: rgba(240, 113, 107, 0.12);
 
@@ -42,7 +73,7 @@
   --cat-client: #a4aab5;
   --cat-security: #f08a6b;
 
-  /* Chart series (validated dark-mode categorical slots) */
+  /* Chart series (validated categorical slots, dark steps) */
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
@@ -58,8 +89,8 @@
   --topbar-h: 36px;
   --dock-h: 64px;
 
-  --shadow-window: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.65),
-    0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  --shadow-window:
+    0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.65), 0 8px 20px -8px rgba(0, 0, 0, 0.5);
   --shadow-pop: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 16px 48px -8px rgba(0, 0, 0, 0.7);
 
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -67,9 +98,95 @@
   --dur: 200ms;
 }
 
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f4f5f7;
+  --bg-grid: rgba(15, 17, 20, 0.045);
+  --bg-glow: rgba(59, 111, 224, 0.07);
+  --surface-0: #fafbfc;
+  --surface-1: #ffffff;
+  --surface-2: #f3f4f6;
+  --surface-3: #e9ebef;
+  --surface-hover: #eceef2;
+  --hover-wash: rgba(15, 17, 20, 0.04);
+
+  --chrome-bg: rgba(250, 250, 251, 0.84);
+  --chrome-solid: rgba(250, 250, 251, 0.97);
+  --dock-bg: rgba(255, 255, 255, 0.86);
+  --widget-bg: #ffffff;
+  --term-bg: #ffffff;
+  --dim-opacity: 0.42;
+  --backdrop: rgba(15, 17, 20, 0.2);
+  --glyph-top: #ffffff;
+  --glyph-bottom: #f1f2f5;
+  --glyph-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 6px 14px -10px rgba(15, 17, 20, 0.35);
+  --pdf-bg: #e6e8ec;
+
+  --line: #e1e4e9;
+  --line-soft: #eceef2;
+  --line-strong: #d0d4db;
+  --line-hover: #b8bdc6;
+
+  --text: #15171c;
+  --text-2: #4a515c;
+  --text-3: #5e6571;
+  --text-4: #636976;
+
+  --btn-primary-bg: #15171c;
+  --btn-primary-fg: #ffffff;
+  --btn-primary-hover: #000000;
+
+  --accent: #3563c8;
+  --accent-strong: #2552c4;
+  --accent-soft: rgba(59, 111, 224, 0.1);
+  --accent-softer: rgba(59, 111, 224, 0.045);
+  --accent-hover: rgba(59, 111, 224, 0.16);
+  --accent-line: rgba(59, 111, 224, 0.36);
+  --selection: rgba(59, 111, 224, 0.22);
+
+  --ok: #147839;
+  --ok-soft: rgba(21, 128, 61, 0.12);
+  --warn: #aa4e09;
+  --warn-soft: rgba(180, 83, 9, 0.1);
+  --warn-line: rgba(180, 83, 9, 0.3);
+  --err: #c62c2c;
+  --err-soft: rgba(212, 47, 47, 0.1);
+
+  --cat-compute: #3b6fe0;
+  --cat-storage: #c2850a;
+  --cat-identity: #7c4ddf;
+  --cat-data: #0e9690;
+  --cat-client: #6b7280;
+  --cat-security: #df5a2e;
+
+  /* Chart series (validated categorical slots, light steps) */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+
+  --shadow-window:
+    0 0 0 1px rgba(15, 17, 20, 0.05), 0 24px 56px -16px rgba(15, 17, 20, 0.22), 0 8px 18px -10px rgba(15, 17, 20, 0.14);
+  --shadow-pop: 0 0 0 1px rgba(15, 17, 20, 0.05), 0 16px 40px -10px rgba(15, 17, 20, 0.24);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-fast: 0ms;
     --dur: 0ms;
   }
+}
+
+/* Theme switch: freeze per-element transitions so colours change in one step
+   (the View Transitions cross-fade, where supported, handles the animation). */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: ease;
 }

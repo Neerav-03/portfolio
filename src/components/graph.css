@@ -10,6 +10,10 @@
     var(--surface-0);
   -webkit-overflow-scrolling: touch;
 }
+.graph:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
 .graph svg {
   display: block;
   width: 100%;
@@ -29,7 +33,7 @@
   stroke-width: 1.5;
 }
 .graph__edge.is-dim {
-  opacity: 0.3;
+  opacity: var(--dim-opacity);
 }
 .graph__packet {
   fill: var(--accent-strong);
@@ -95,7 +99,7 @@
 }
 
 .graph__node.is-dim {
-  opacity: 0.32;
+  opacity: var(--dim-opacity);
 }
 .graph__node.is-on .graph__box {
   stroke: var(--node-color);

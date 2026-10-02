@@ -2,7 +2,7 @@ import { Briefcase, FolderGit2, House, Search, SquareTerminal } from 'lucide-rea
 import type { AppId } from '../data/types';
 import { preloadApp } from '../apps/registry';
 import { APP_META, DOCK_APPS } from './appMeta';
-import { useOS } from './OSContext';
+import { useOS } from './useOS';
 
 export function Dock() {
   const { state, openApp, focusApp, setTerminal } = useOS();
@@ -71,16 +71,39 @@ export function MobileNav() {
 
   const items = [
     { key: 'home', label: 'Home', icon: House, active: !topId && !state.terminalOpen, onClick: goHome },
-    { key: 'experience', label: 'Experience', icon: Briefcase, active: topId === 'experience', onClick: () => openApp('experience') },
-    { key: 'projects', label: 'Projects', icon: FolderGit2, active: topId === 'projects', onClick: () => openApp('projects') },
+    {
+      key: 'experience',
+      label: 'Experience',
+      icon: Briefcase,
+      active: topId === 'experience',
+      onClick: () => openApp('experience'),
+    },
+    {
+      key: 'projects',
+      label: 'Projects',
+      icon: FolderGit2,
+      active: topId === 'projects',
+      onClick: () => openApp('projects'),
+    },
     { key: 'search', label: 'Search', icon: Search, active: state.paletteOpen, onClick: () => setPalette(true) },
-    { key: 'terminal', label: 'Terminal', icon: SquareTerminal, active: state.terminalOpen, onClick: () => setTerminal(!state.terminalOpen) },
+    {
+      key: 'terminal',
+      label: 'Terminal',
+      icon: SquareTerminal,
+      active: state.terminalOpen,
+      onClick: () => setTerminal(!state.terminalOpen),
+    },
   ];
 
   return (
     <nav className="mnav" aria-label="Primary">
       {items.map((it) => (
-        <button key={it.key} className={`mnav__item${it.active ? ' is-active' : ''}`} onClick={it.onClick} aria-current={it.active ? 'page' : undefined}>
+        <button
+          key={it.key}
+          className={`mnav__item${it.active ? ' is-active' : ''}`}
+          onClick={it.onClick}
+          aria-current={it.active ? 'page' : undefined}
+        >
           <it.icon size={19} strokeWidth={1.7} />
           <span className="mono">{it.label}</span>
         </button>

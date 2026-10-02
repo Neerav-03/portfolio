@@ -1,4 +1,4 @@
-import { ArrowUpRight, Download, Mail, Search } from 'lucide-react';
+import { ArrowUpRight, Download, Eye, Mail, Search } from 'lucide-react';
 import {
   codingProfiles,
   contests,
@@ -11,18 +11,30 @@ import {
   resumeUrl,
   skills,
 } from '../data/portfolio';
+import { Avatar } from '../components/Avatar';
 import { GitHubIcon, LinkedInIcon } from '../components/BrandIcons';
 import { MOD_LABEL } from '../lib/platform';
 import { appHref } from '../lib/route';
 import { ModeToggle } from '../os/ModeToggle';
-import { useOS } from '../os/OSContext';
+import { ThemeToggle } from '../os/ThemeToggle';
+import { useOS } from '../os/useOS';
 import { Logo } from '../os/TopBar';
 import './recruiter.css';
 
 /** Map Netradyne bullets to their interactive deep-dive in System mode. */
 const NETRADYNE_DEEP_LINKS = ['drp', 'drp', 'dal', 'encryption'];
 
-function Section({ index, title, id, children }: { index: string; title: string; id: string; children: React.ReactNode }) {
+function Section({
+  index,
+  title,
+  id,
+  children,
+}: {
+  index: string;
+  title: string;
+  id: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="rv-section" aria-labelledby={id}>
       <div className="rv-section__label mono">
@@ -35,7 +47,7 @@ function Section({ index, title, id, children }: { index: string; title: string;
 }
 
 export function RecruiterView() {
-  const { setPalette, copyEmail } = useOS();
+  const { setPalette, copyEmail, previewResume } = useOS();
   const cf = codingProfiles[0];
   const cc = codingProfiles[1];
 
@@ -54,6 +66,7 @@ export function RecruiterView() {
               <span className="kbd">K</span>
             </span>
           </button>
+          <ThemeToggle />
           <ModeToggle />
         </div>
       </header>
@@ -63,13 +76,18 @@ export function RecruiterView() {
           <p className="label rv-hero__eyebrow">
             <span className="dot dot--ok" /> Profile · {profile.location}
           </p>
-          <h1 className="rv-hero__name">{profile.name}</h1>
-          <p className="rv-hero__role">
-            {profile.title} at <strong>{profile.company}</strong>
-          </p>
-          <p className="rv-hero__meta">
-            {education.shortName} · {education.degree} · GPA {education.gpa}/{education.gpaScale}
-          </p>
+          <div className="rv-hero__who">
+            <Avatar size={92} />
+            <div>
+              <h1 className="rv-hero__name">{profile.name}</h1>
+              <p className="rv-hero__role">
+                {profile.title} at <strong>{profile.company}</strong>
+              </p>
+              <p className="rv-hero__meta">
+                {education.shortName} · {education.degree} · GPA {education.gpa}/{education.gpaScale}
+              </p>
+            </div>
+          </div>
           <div className="chips rv-hero__stack" aria-label="Core stack">
             {profile.coreStack.map((s) => (
               <span key={s} className="chip chip--accent">
@@ -78,9 +96,14 @@ export function RecruiterView() {
             ))}
           </div>
           <div className="rv-hero__actions">
-            <a className="btn btn--primary" href={resumeUrl} download>
-              <Download size={14} /> Download Resume
-            </a>
+            <span className="rv-resume">
+              <a className="btn btn--primary" href={resumeUrl} download={profile.resumeFile}>
+                <Download size={14} /> Download Resume
+              </a>
+              <button className="btn" onClick={previewResume}>
+                <Eye size={14} /> Preview
+              </button>
+            </span>
             <a className="btn" href={profile.links.github} target="_blank" rel="noreferrer">
               <GitHubIcon size={14} /> GitHub
             </a>

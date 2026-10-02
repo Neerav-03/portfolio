@@ -1,18 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import './charts.css';
 
-/** Deterministic PRNG so illustrative data is stable across renders. */
-export function seeded(seed: number) {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 const W = 640;
 const H = 220;
 const PAD = { l: 40, r: 16, t: 14, b: 26 };
@@ -27,7 +15,17 @@ function Tooltip({ x, y, children }: { x: number; y: number; children: ReactNode
   );
 }
 
-function Grid({ ticks, max, min = 0, format = (v: number) => String(v) }: { ticks: number; max: number; min?: number; format?: (v: number) => string }) {
+function Grid({
+  ticks,
+  max,
+  min = 0,
+  format = (v: number) => String(v),
+}: {
+  ticks: number;
+  max: number;
+  min?: number;
+  format?: (v: number) => string;
+}) {
   return (
     <g className="chart__grid">
       {Array.from({ length: ticks + 1 }, (_, i) => {
@@ -46,7 +44,15 @@ function Grid({ ticks, max, min = 0, format = (v: number) => String(v) }: { tick
   );
 }
 
-export function BarChart({ data, label, format = (v) => v.toFixed(0) }: { data: { label: string; value: number }[]; label: string; format?: (v: number) => string }) {
+export function BarChart({
+  data,
+  label,
+  format = (v) => v.toFixed(0),
+}: {
+  data: { label: string; value: number }[];
+  label: string;
+  format?: (v: number) => string;
+}) {
   const [hover, setHover] = useState<number | null>(null);
   const max = Math.ceil(Math.max(...data.map((d) => d.value)) / 20) * 20;
   const slot = IW / data.length;
@@ -90,7 +96,19 @@ export interface Series {
   values: number[];
 }
 
-export function LineChart({ series, labels, label, min, max }: { series: Series[]; labels: string[]; label: string; min: number; max: number }) {
+export function LineChart({
+  series,
+  labels,
+  label,
+  min,
+  max,
+}: {
+  series: Series[];
+  labels: string[];
+  label: string;
+  min: number;
+  max: number;
+}) {
   const [hover, setHover] = useState<number | null>(null);
   const n = labels.length;
   const x = (i: number) => PAD.l + (IW * i) / (n - 1);
@@ -126,8 +144,14 @@ export function LineChart({ series, labels, label, min, max }: { series: Series[
         {hover !== null && <line className="chart__cross" x1={x(hover)} x2={x(hover)} y1={PAD.t} y2={PAD.t + IH} />}
         {series.map((s) => (
           <g key={s.name}>
-            <path className="chart__line" stroke={s.color} d={s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')} />
-            {hover !== null && <circle className="chart__dot" cx={x(hover)} cy={y(s.values[hover])} r={4} fill={s.color} />}
+            <path
+              className="chart__line"
+              stroke={s.color}
+              d={s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')}
+            />
+            {hover !== null && (
+              <circle className="chart__dot" cx={x(hover)} cy={y(s.values[hover])} r={4} fill={s.color} />
+            )}
           </g>
         ))}
       </svg>
@@ -145,7 +169,17 @@ export function LineChart({ series, labels, label, min, max }: { series: Series[
   );
 }
 
-export function ScatterChart({ points, label, slope, intercept }: { points: { x: number; y: number }[]; label: string; slope: number; intercept: number }) {
+export function ScatterChart({
+  points,
+  label,
+  slope,
+  intercept,
+}: {
+  points: { x: number; y: number }[];
+  label: string;
+  slope: number;
+  intercept: number;
+}) {
   const [hover, setHover] = useState<number | null>(null);
   const xr = [-20, 20];
   const yr = [-40, 40];
@@ -161,7 +195,13 @@ export function ScatterChart({ points, label, slope, intercept }: { points: { x:
             {`${v > 0 ? '+' : ''}${v}%`}
           </text>
         ))}
-        <line className="chart__fit" x1={sx(xr[0])} y1={sy(slope * xr[0] + intercept)} x2={sx(xr[1])} y2={sy(slope * xr[1] + intercept)} />
+        <line
+          className="chart__fit"
+          x1={sx(xr[0])}
+          y1={sy(slope * xr[0] + intercept)}
+          x2={sx(xr[1])}
+          y2={sy(slope * xr[1] + intercept)}
+        />
         {points.map((p, i) => (
           <g key={i} onMouseEnter={() => setHover(i)}>
             <circle className="chart__hit" cx={sx(p.x)} cy={sy(p.y)} r={9} />
@@ -178,35 +218,55 @@ export function ScatterChart({ points, label, slope, intercept }: { points: { x:
   );
 }
 
-export function HeatGrid({ values, rows, cols, label }: { values: number[][]; rows: string[]; cols: string[]; label: string }) {
+export function HeatGrid({
+  values,
+  rows,
+  cols,
+  label,
+}: {
+  values: number[][];
+  rows: string[];
+  cols: string[];
+  label: string;
+}) {
   const [hover, setHover] = useState<[number, number] | null>(null);
   const max = Math.max(...values.flat());
   return (
-    <div className="heat" role="img" aria-label={label} onMouseLeave={() => setHover(null)}>
-      <span className="heat__corner mono">R ↓ · F →</span>
-      {cols.map((c) => (
-        <span key={c} className="heat__col mono">
-          {c}
-        </span>
-      ))}
-      {values.map((row, r) => (
-        <div key={r} className="heat__row">
-          <span className="heat__rlabel mono">{rows[r]}</span>
-          {row.map((v, c) => {
-            const t = v / max;
-            return (
-              <span
-                key={c}
-                className={`heat__cell${hover?.[0] === r && hover?.[1] === c ? ' is-hover' : ''}`}
-                style={{ background: `color-mix(in srgb, #3987e5 ${Math.round(12 + t * 78)}%, #121418)` }}
-                onMouseEnter={() => setHover([r, c])}
-              >
-                {hover?.[0] === r && hover?.[1] === c ? `${v.toFixed(1)}%` : ''}
-              </span>
-            );
-          })}
-        </div>
-      ))}
+    <div className="heat-wrap">
+      <div className="heat" role="img" aria-label={label} onMouseLeave={() => setHover(null)}>
+        <span className="heat__corner mono">R ↓ · F →</span>
+        {cols.map((c) => (
+          <span key={c} className="heat__col mono">
+            {c}
+          </span>
+        ))}
+        {values.map((row, r) => (
+          <div key={r} className="heat__row">
+            <span className="heat__rlabel mono">{rows[r]}</span>
+            {row.map((v, c) => {
+              const t = v / max;
+              return (
+                <span
+                  key={c}
+                  className={`heat__cell${hover?.[0] === r && hover?.[1] === c ? ' is-hover' : ''}`}
+                  style={{
+                    background: `color-mix(in srgb, var(--series-1) ${Math.round(12 + t * 78)}%, var(--surface-1))`,
+                    color: t > 0.55 ? '#fff' : 'var(--text)',
+                  }}
+                  onMouseEnter={() => setHover([r, c])}
+                >
+                  {hover?.[0] === r && hover?.[1] === c ? `${v.toFixed(1)}%` : ''}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div className="heat__legend mono" aria-hidden="true">
+        <span>lower share</span>
+        <span className="heat__ramp" />
+        <span>higher share</span>
+      </div>
     </div>
   );
 }

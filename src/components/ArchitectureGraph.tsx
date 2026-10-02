@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type KeyboardEvent } from 'react';
 import { useReducedMotion } from '../hooks/useMediaQuery';
+import { useScrollable } from '../hooks/useScrollable';
 import './graph.css';
 
 export type NodeKind = 'compute' | 'storage' | 'identity' | 'data' | 'client' | 'security';
@@ -104,6 +105,7 @@ export function ArchitectureGraph({
     const el = wrapRef.current;
     if (center && el && el.scrollWidth > el.clientWidth) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
   }, [center]);
+  const scrollable = useScrollable(wrapRef, 'x');
   const uid = useId().replace(/:/g, '');
   const reduced = useReducedMotion();
   const byId = new Map(nodes.map((n) => [n.id, n]));
@@ -118,7 +120,11 @@ export function ArchitectureGraph({
   };
 
   return (
-    <div ref={wrapRef} className={`graph ${className ?? ''}`}>
+    <div
+      ref={wrapRef}
+      className={`graph ${className ?? ''}`}
+      {...(scrollable ? { tabIndex: 0, role: 'region', 'aria-label': `${label} (scroll horizontally)` } : {})}
+    >
       <svg
         viewBox={`0 0 ${width} ${height}`}
         style={{ minWidth: minWidth ?? Math.round(width * 0.72) }}
@@ -126,10 +132,26 @@ export function ArchitectureGraph({
         aria-label={label}
       >
         <defs>
-          <marker id={`arrow-${uid}`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker
+            id={`arrow-${uid}`}
+            viewBox="0 0 8 8"
+            refX="7"
+            refY="4"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
             <path d="M0,0.8 L7,4 L0,7.2" fill="none" stroke="var(--line-strong)" strokeWidth="1.4" />
           </marker>
-          <marker id={`arrow-on-${uid}`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker
+            id={`arrow-on-${uid}`}
+            viewBox="0 0 8 8"
+            refX="7"
+            refY="4"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
             <path d="M0,0.8 L7,4 L0,7.2" fill="none" stroke="var(--accent)" strokeWidth="1.4" />
           </marker>
         </defs>
