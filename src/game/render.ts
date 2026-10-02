@@ -5,19 +5,77 @@ import type { FrameName, Palette, Sprites } from './sprites';
 
 const BRACES = ['.x...x.', 'x.....x', 'x.....x', '.x...x.', 'x.....x', 'x.....x', '.x...x.'];
 
+/** Solid, outlined blocks so they stand out from the background racks in both themes. */
 function drawBlock(ctx: CanvasRenderingContext2D, x: number, y: number, p: Palette, used: boolean) {
-  ctx.fillStyle = used ? p.used : p.accentSoft;
-  ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
-  ctx.strokeStyle = used ? p.brickLine : p.accent;
-  ctx.lineWidth = 1;
-  ctx.strokeRect(x + 1.5, y + 1.5, TILE - 3, TILE - 3);
-  if (used) return;
+  // 1 px outline in the sky colour separates the block from whatever is behind it.
+  ctx.fillStyle = p.bg;
+  ctx.fillRect(x, y, TILE, TILE);
+  if (used) {
+    ctx.fillStyle = p.used;
+    ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
+    ctx.fillStyle = p.groundTop;
+    ctx.fillRect(x + 1, y + 1, TILE - 2, 1);
+    ctx.fillRect(x + 1, y + TILE - 2, TILE - 2, 1);
+    return;
+  }
   ctx.fillStyle = p.accent;
+  ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
+  ctx.fillStyle = p.accentStrong;
+  ctx.fillRect(x + 1, y + 1, TILE - 2, 1); // top highlight
+  ctx.fillStyle = p.bg;
   BRACES.forEach((row, ry) =>
     [...row].forEach((ch, rx) => {
       if (ch === 'x') ctx.fillRect(x + 4 + rx, y + 4 + ry, 1, 1);
     }),
   );
+}
+
+type SignPart = { key: string } | { text: string };
+
+/** A tutorial signpost in the level: keycaps and short labels, centred on cx. */
+function drawSign(ctx: CanvasRenderingContext2D, cx: number, y: number, parts: SignPart[], p: Palette) {
+  const KEY_FONT = '600 7px "Geist Mono Variable", monospace';
+  const TEXT_FONT = '500 7px "Geist Variable", sans-serif';
+  const widths = parts.map((part) => {
+    ctx.font = 'key' in part ? KEY_FONT : TEXT_FONT;
+    const w = ctx.measureText('key' in part ? part.key : part.text).width;
+    return 'key' in part ? Math.max(11, w + 6) : w;
+  });
+  const total = widths.reduce((a, b) => a + b, 0) + (parts.length - 1) * 4;
+  let x = Math.round(cx - total / 2);
+  parts.forEach((part, i) => {
+    const w = widths[i];
+    if ('key' in part) {
+      ctx.fillStyle = p.groundTop;
+      ctx.fillRect(x, y - 9, w, 12);
+      ctx.fillStyle = p.brick;
+      ctx.fillRect(x + 1, y - 8, w - 2, 9);
+      ctx.fillStyle = p.text;
+      ctx.font = KEY_FONT;
+      ctx.textAlign = 'center';
+      ctx.fillText(part.key, x + w / 2, y - 1);
+    } else {
+      ctx.fillStyle = p.textDim;
+      ctx.font = TEXT_FONT;
+      ctx.textAlign = 'left';
+      ctx.fillText(part.text, x, y - 1);
+    }
+    x += w + 4;
+  });
+  ctx.textAlign = 'start';
+}
+
+/** Desktop tutorial signs, placed where each mechanic is first needed. */
+function drawTutorial(ctx: CanvasRenderingContext2D, w: World, p: Palette) {
+  const first = w.level.blocks[0];
+  const bug = w.level.bugs[0];
+  drawSign(ctx, 3.5 * TILE, 8 * TILE, [{ key: '←' }, { key: '→' }, { text: 'move' }], p);
+  if (first) {
+    const cx = (first.col + 0.5) * TILE;
+    drawSign(ctx, cx, first.row * TILE - 14, [{ key: 'SPACE' }, { text: 'jump' }], p);
+    drawSign(ctx, cx, first.row * TILE - 3, [{ text: 'hit { } blocks from below' }], p);
+  }
+  if (bug) drawSign(ctx, (bug.col + 0.5) * TILE, 7 * TILE, [{ text: 'jump on bugs' }], p);
 }
 
 function playerFrame(w: World): FrameName {
@@ -34,6 +92,7 @@ export function render(
   p: Palette,
   facts: QuestFact[],
   t: number,
+  opts: { hints: boolean } = { hints: false },
 ) {
   const cam = Math.round(cameraX(w));
   ctx.imageSmoothingEnabled = false;
@@ -52,6 +111,7 @@ export function render(
     const x = Math.round(i * RACK - par);
     const h = 44 + ((((i * 37) % 5) + 5) % 5) * 12;
     const y = 10 * TILE - h;
+    ctx.globalAlpha = 0.55;
     ctx.fillStyle = p.rack;
     ctx.fillRect(x, y, 34, h);
     for (let ly = y + 6; ly < 10 * TILE - 4; ly += 8) {
@@ -61,6 +121,7 @@ export function render(
       ctx.fillStyle = p.grid;
       ctx.fillRect(x + 9, ly, 20, 1);
     }
+    ctx.globalAlpha = 1;
   }
 
   ctx.save();
@@ -94,6 +155,8 @@ export function render(
       }
     }
   }
+
+  if (opts.hints) drawTutorial(ctx, w, p);
 
   // Commits: little contribution-graph squares
   for (const c of w.commits) {

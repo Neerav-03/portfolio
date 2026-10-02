@@ -3,22 +3,26 @@
  * Each sprite is a list of rows; every character maps to a palette colour, '.' is transparent.
  */
 
-export interface Palette {
-  bg: string;
-  grid: string;
-  rack: string;
-  ground: string;
-  groundTop: string;
-  brick: string;
-  brickLine: string;
-  text: string;
-  textDim: string;
-  accent: string;
-  accentSoft: string;
-  ok: string;
-  err: string;
-  used: string;
-}
+/** Theme token behind each game colour (tests check contrast between these). */
+export const PALETTE_TOKENS = {
+  bg: '--surface-0',
+  grid: '--bg-grid',
+  rack: '--surface-2',
+  ground: '--surface-2',
+  groundTop: '--line-strong',
+  brick: '--surface-3',
+  brickLine: '--line',
+  text: '--text',
+  textDim: '--text-3',
+  accent: '--accent',
+  accentStrong: '--accent-strong',
+  accentSoft: '--accent-soft',
+  ok: '--ok',
+  err: '--err',
+  used: '--surface-3',
+} as const;
+
+export type Palette = Record<keyof typeof PALETTE_TOKENS, string>;
 
 /** Character colours are the same in both themes (it's a person, not UI). */
 const CHARACTER: Record<string, string> = {
@@ -111,21 +115,7 @@ export function buildSprites(p: Palette): Sprites {
 /** Read the live theme tokens so the game matches light and dark mode. */
 export function readPalette(): Palette {
   const cs = getComputedStyle(document.documentElement);
-  const v = (name: string) => cs.getPropertyValue(name).trim();
-  return {
-    bg: v('--surface-0'),
-    grid: v('--bg-grid'),
-    rack: v('--surface-2'),
-    ground: v('--surface-2'),
-    groundTop: v('--line-strong'),
-    brick: v('--surface-3'),
-    brickLine: v('--line'),
-    text: v('--text'),
-    textDim: v('--text-3'),
-    accent: v('--accent'),
-    accentSoft: v('--accent-soft'),
-    ok: v('--ok'),
-    err: v('--err'),
-    used: v('--surface-3'),
-  };
+  return Object.fromEntries(
+    Object.entries(PALETTE_TOKENS).map(([key, token]) => [key, cs.getPropertyValue(token).trim()]),
+  ) as Palette;
 }

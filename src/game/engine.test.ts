@@ -77,6 +77,12 @@ describe('player physics', () => {
     expect(w.player.onGround).toBe(true);
   });
 
+  it('emits a jump event when a jump starts (for sound)', () => {
+    const w = createWorld();
+    expect(step(w, { ...idle, jump: true }, 1 / 60)).toContainEqual({ type: 'jump' });
+    expect(step(w, { ...idle, jump: true }, 1 / 60)).not.toContainEqual({ type: 'jump' });
+  });
+
   it('releasing jump early gives a shorter hop', () => {
     const full = createWorld();
     const short = createWorld();

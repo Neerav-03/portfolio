@@ -31,6 +31,7 @@ export interface Input {
 }
 
 export type QuestEvent =
+  | { type: 'jump' }
   | { type: 'fact'; index: number }
   | { type: 'commit' }
   | { type: 'squash' }
@@ -175,6 +176,7 @@ function stepOnce(w: World, input: Input, dt: number, events: QuestEvent[]) {
     p.buffer = 0;
     p.coyote = 0;
     p.onGround = false;
+    events.push({ type: 'jump' });
   }
   if (!input.jump && p.jumpHeld && p.vy < 0) p.vy *= PHYSICS.jumpCut;
   p.jumpHeld = input.jump;

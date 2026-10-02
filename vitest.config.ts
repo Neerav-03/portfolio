@@ -24,6 +24,7 @@ export default mergeConfig(
           'src/game/level.ts',
           'src/game/facts.ts',
           'src/game/launch.ts',
+          'src/game/feedback.ts',
           'src/data/**',
         ],
         thresholds: { lines: 85, functions: 85, statements: 85, branches: 75 },
