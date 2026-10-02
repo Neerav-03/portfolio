@@ -3,13 +3,20 @@ import { useClock } from '../hooks/useClock';
 import { MOD_LABEL } from '../lib/platform';
 import { ModeToggle } from './ModeToggle';
 import { ThemeToggle } from './ThemeToggle';
-import { useOS } from './OSContext';
+import { useOS } from './useOS';
 
 export function Logo({ size = 14 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden="true">
       <rect x="1" y="1" width="14" height="14" rx="3" fill="none" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M5 11V5l6 6V5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M5 11V5l6 6V5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -33,7 +40,12 @@ export function TopBar() {
       <div className="topbar__right">
         <ModeToggle />
         <ThemeToggle />
-        <button className="topbar__btn mono" onClick={() => setPalette(true)} aria-label="Open command palette" aria-keyshortcuts="Control+K Meta+K">
+        <button
+          className="topbar__btn mono"
+          onClick={() => setPalette(true)}
+          aria-label="Open command palette"
+          aria-keyshortcuts="Control+K Meta+K"
+        >
           <Search size={13} />
           <span className="topbar__hint">
             <span className="kbd">{MOD_LABEL}</span>

@@ -289,14 +289,26 @@
   height: 4px;
   border-radius: 4px;
   background:
-    linear-gradient(90deg, transparent calc(var(--mark) - 1px), var(--err) calc(var(--mark) - 1px), var(--err) calc(var(--mark) + 1px), transparent calc(var(--mark) + 1px)),
+    linear-gradient(
+      90deg,
+      transparent calc(var(--mark) - 1px),
+      var(--err) calc(var(--mark) - 1px),
+      var(--err) calc(var(--mark) + 1px),
+      transparent calc(var(--mark) + 1px)
+    ),
     linear-gradient(90deg, var(--accent) var(--fill), var(--surface-3) var(--fill));
 }
 .range::-moz-range-track {
   height: 4px;
   border-radius: 4px;
   background:
-    linear-gradient(90deg, transparent calc(var(--mark) - 1px), var(--err) calc(var(--mark) - 1px), var(--err) calc(var(--mark) + 1px), transparent calc(var(--mark) + 1px)),
+    linear-gradient(
+      90deg,
+      transparent calc(var(--mark) - 1px),
+      var(--err) calc(var(--mark) - 1px),
+      var(--err) calc(var(--mark) + 1px),
+      transparent calc(var(--mark) + 1px)
+    ),
     linear-gradient(90deg, var(--accent) var(--fill), var(--surface-3) var(--fill));
 }
 .range::-webkit-slider-thumb {

@@ -126,10 +126,26 @@ export function ArchitectureGraph({
         aria-label={label}
       >
         <defs>
-          <marker id={`arrow-${uid}`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker
+            id={`arrow-${uid}`}
+            viewBox="0 0 8 8"
+            refX="7"
+            refY="4"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
             <path d="M0,0.8 L7,4 L0,7.2" fill="none" stroke="var(--line-strong)" strokeWidth="1.4" />
           </marker>
-          <marker id={`arrow-on-${uid}`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker
+            id={`arrow-on-${uid}`}
+            viewBox="0 0 8 8"
+            refX="7"
+            refY="4"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
             <path d="M0,0.8 L7,4 L0,7.2" fill="none" stroke="var(--accent)" strokeWidth="1.4" />
           </marker>
         </defs>

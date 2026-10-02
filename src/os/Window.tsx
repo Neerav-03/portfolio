@@ -1,7 +1,7 @@
 import { ArrowLeft, Maximize2, Minus, X } from 'lucide-react';
 import { useEffect, useRef, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
 import { APP_META } from './appMeta';
-import { useOS } from './OSContext';
+import { useOS } from './useOS';
 import { DESKTOP_BOTTOM, DESKTOP_TOP, type WindowState } from './osState';
 import './window.css';
 
@@ -26,6 +26,25 @@ export function Window({ win, z, isTop, isMobile, children }: WindowProps) {
   useEffect(() => {
     ref.current?.focus({ preventScroll: true });
   }, []);
+
+  // Window-level behaviour: any press inside raises the window; Esc closes it.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onPointer = () => focusApp(win.id);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !e.defaultPrevented) {
+        e.stopPropagation();
+        closeApp(win.id);
+      }
+    };
+    el.addEventListener('pointerdown', onPointer, { capture: true });
+    el.addEventListener('keydown', onKey);
+    return () => {
+      el.removeEventListener('pointerdown', onPointer, { capture: true });
+      el.removeEventListener('keydown', onKey);
+    };
+  }, [focusApp, closeApp, win.id]);
 
   // Let the exit animation play before unmounting.
   useEffect(() => {
@@ -106,13 +125,6 @@ export function Window({ win, z, isTop, isMobile, children }: WindowProps) {
       aria-labelledby={titleId}
       tabIndex={-1}
       inert={win.minimized || win.closing}
-      onPointerDownCapture={() => focusApp(win.id)}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape' && !e.defaultPrevented) {
-          e.stopPropagation();
-          closeApp(win.id);
-        }
-      }}
     >
       <header
         className="win__bar"
@@ -127,13 +139,25 @@ export function Window({ win, z, isTop, isMobile, children }: WindowProps) {
           </button>
         ) : (
           <div className="win__controls">
-            <button className="win__ctl win__ctl--close" onClick={() => closeApp(win.id)} aria-label={`Close ${meta.title}`}>
+            <button
+              className="win__ctl win__ctl--close"
+              onClick={() => closeApp(win.id)}
+              aria-label={`Close ${meta.title}`}
+            >
               <X size={9} strokeWidth={3} />
             </button>
-            <button className="win__ctl win__ctl--min" onClick={() => minimizeApp(win.id)} aria-label={`Minimize ${meta.title}`}>
+            <button
+              className="win__ctl win__ctl--min"
+              onClick={() => minimizeApp(win.id)}
+              aria-label={`Minimize ${meta.title}`}
+            >
               <Minus size={9} strokeWidth={3} />
             </button>
-            <button className="win__ctl win__ctl--max" onClick={() => toggleMax(win.id)} aria-label={win.maximized ? `Restore ${meta.title}` : `Maximize ${meta.title}`}>
+            <button
+              className="win__ctl win__ctl--max"
+              onClick={() => toggleMax(win.id)}
+              aria-label={win.maximized ? `Restore ${meta.title}` : `Maximize ${meta.title}`}
+            >
               <Maximize2 size={8} strokeWidth={3} />
             </button>
           </div>

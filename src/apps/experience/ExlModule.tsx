@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import type { ExperienceEntry } from '../../data/types';
 import { ArchitectureGraph, type GraphEdge, type GraphNode } from '../../components/ArchitectureGraph';
 import { Conceptual, Stat } from '../../components/Conceptual';
-import { BarChart, HeatGrid, LineChart, ScatterChart, seeded } from '../../components/MiniCharts';
+import { BarChart, HeatGrid, LineChart, ScatterChart } from '../../components/MiniCharts';
+import { seeded } from '../../lib/random';
 
 const PIPE_NODES: GraphNode[] = [
   { id: 'stores', label: 'STORES', sub: '5 retail stores', x: 76, y: 60, w: 124, kind: 'client', stack: true },
@@ -35,7 +36,9 @@ function useIllustrativeData() {
       const x = (rnd() - 0.5) * 36;
       return { x, y: -1.35 * x + (rnd() - 0.5) * 18 };
     });
-    const heat = Array.from({ length: 5 }, (_, r) => Array.from({ length: 5 }, (_, c) => Math.max(0.6, 2 + (4 - Math.abs(r - c)) * 1.4 + (rnd() - 0.3) * 2.5)));
+    const heat = Array.from({ length: 5 }, (_, r) =>
+      Array.from({ length: 5 }, (_, c) => Math.max(0.6, 2 + (4 - Math.abs(r - c)) * 1.4 + (rnd() - 0.3) * 2.5)),
+    );
     return { months, sales, own, comp, points, heat };
   }, []);
 }
@@ -90,24 +93,45 @@ export function ExlModule({ entry }: { entry: ExperienceEntry }) {
         </div>
         <div className="tabs" role="tablist" aria-label="Dashboard views">
           {TABS.map((t) => (
-            <button key={t} role="tab" id={`exl-tab-${t}`} aria-selected={tab === t} aria-controls="exl-panel" className="tab" onClick={() => setTab(t)}>
+            <button
+              key={t}
+              role="tab"
+              id={`exl-tab-${t}`}
+              aria-selected={tab === t}
+              aria-controls="exl-panel"
+              className="tab"
+              onClick={() => setTab(t)}
+            >
               {t}
             </button>
           ))}
         </div>
-        <div id="exl-panel" role="tabpanel" aria-labelledby={`exl-tab-${tab}`} className="exl-dash__body fade-in" key={tab}>
+        <div
+          id="exl-panel"
+          role="tabpanel"
+          aria-labelledby={`exl-tab-${tab}`}
+          className="exl-dash__body fade-in"
+          key={tab}
+        >
           {tab === 'Overview' && (
             <div className="exl-overview">
               <div className="stack">
                 <p className="label">KPIs &amp; views</p>
                 <div className="exl-kpis">
-                  {['Sales growth (KPI)', 'Retention (KPI)', 'Competitive price · Price view', 'Price elasticity · Elasticity view'].map((k) => (
+                  {[
+                    'Sales growth (KPI)',
+                    'Retention (KPI)',
+                    'Competitive price · Price view',
+                    'Price elasticity · Elasticity view',
+                  ].map((k) => (
                     <div key={k} className="exl-kpi">
                       <span className="dot dot--accent" /> {k}
                     </div>
                   ))}
                 </div>
-                <p className="exl-caption">The dashboard combined these views so strategists could set profitable prices based on elasticities.</p>
+                <p className="exl-caption">
+                  The dashboard combined these views so strategists could set profitable prices based on elasticities.
+                </p>
               </div>
               <div className="stack">
                 <p className="label">RFM segmentation · share of customers</p>
@@ -120,7 +144,13 @@ export function ExlModule({ entry }: { entry: ExperienceEntry }) {
               </div>
             </div>
           )}
-          {tab === 'Sales' && <BarChart data={d.sales} label="Illustrative monthly sales index over 24 months" format={(v) => `index ${v.toFixed(0)}`} />}
+          {tab === 'Sales' && (
+            <BarChart
+              data={d.sales}
+              label="Illustrative monthly sales index over 24 months"
+              format={(v) => `index ${v.toFixed(0)}`}
+            />
+          )}
           {tab === 'Price' && (
             <LineChart
               labels={d.months}
@@ -135,16 +165,24 @@ export function ExlModule({ entry }: { entry: ExperienceEntry }) {
           )}
           {tab === 'Elasticity' && (
             <div className="stack">
-              <ScatterChart points={d.points} slope={-1.35} intercept={0} label="Illustrative scatter of price change versus unit sales change with a fitted downward trend" />
-              <p className="exl-caption">Price change (x) vs. change in units sold (y). A steeper downward fit means demand is more price-sensitive.</p>
+              <ScatterChart
+                points={d.points}
+                slope={-1.35}
+                intercept={0}
+                label="Illustrative scatter of price change versus unit sales change with a fitted downward trend"
+              />
+              <p className="exl-caption">
+                Price change (x) vs. change in units sold (y). A steeper downward fit means demand is more
+                price-sensitive.
+              </p>
             </div>
           )}
         </div>
       </section>
 
       <Conceptual>
-        Charts use synthetic, randomly generated data to illustrate the dashboard&rsquo;s views. The real dataset (5 stores, 2
-        years, 857 products) is not reproduced here.
+        Charts use synthetic, randomly generated data to illustrate the dashboard&rsquo;s views. The real dataset (5
+        stores, 2 years, 857 products) is not reproduced here.
       </Conceptual>
 
       <section>

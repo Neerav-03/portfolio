@@ -7,7 +7,12 @@ export function ThemeToggle({ className = 'topbar__btn' }: { className?: string 
   const next = theme === 'dark' ? 'light' : 'dark';
   const Icon = theme === 'dark' ? Sun : Moon;
   return (
-    <button className={`${className} theme-toggle`} onClick={toggleTheme} aria-label={`Switch to ${next} theme`} title={`Switch to ${next} theme`}>
+    <button
+      className={`${className} theme-toggle`}
+      onClick={toggleTheme}
+      aria-label={`Switch to ${next} theme`}
+      title={`Switch to ${next} theme`}
+    >
       <Icon key={theme} size={14} className="theme-toggle__icon" aria-hidden="true" />
     </button>
   );

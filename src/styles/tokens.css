@@ -36,11 +36,11 @@
   --line-strong: #30343c;
   --line-hover: #3b404a;
 
-  /* Ink */
+  /* Ink: every text tone meets WCAG AA (4.5:1) on every surface in its theme. */
   --text: #e8eaee;
   --text-2: #a4aab5;
-  --text-3: #737a86;
-  --text-4: #555b66;
+  --text-3: #8b929e;
+  --text-4: #858b96;
 
   /* Primary button (inverted ink) */
   --btn-primary-bg: #e8eaee;
@@ -89,8 +89,8 @@
   --topbar-h: 36px;
   --dock-h: 64px;
 
-  --shadow-window: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.65),
-    0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  --shadow-window:
+    0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.65), 0 8px 20px -8px rgba(0, 0, 0, 0.5);
   --shadow-pop: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 16px 48px -8px rgba(0, 0, 0, 0.7);
 
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -130,14 +130,14 @@
 
   --text: #15171c;
   --text-2: #4a515c;
-  --text-3: #6b7280;
-  --text-4: #9aa0aa;
+  --text-3: #5e6571;
+  --text-4: #636976;
 
   --btn-primary-bg: #15171c;
   --btn-primary-fg: #ffffff;
   --btn-primary-hover: #000000;
 
-  --accent: #3b6fe0;
+  --accent: #3563c8;
   --accent-strong: #2552c4;
   --accent-soft: rgba(59, 111, 224, 0.1);
   --accent-softer: rgba(59, 111, 224, 0.045);
@@ -145,12 +145,12 @@
   --accent-line: rgba(59, 111, 224, 0.36);
   --selection: rgba(59, 111, 224, 0.22);
 
-  --ok: #15803d;
+  --ok: #147839;
   --ok-soft: rgba(21, 128, 61, 0.12);
-  --warn: #b45309;
+  --warn: #aa4e09;
   --warn-soft: rgba(180, 83, 9, 0.1);
   --warn-line: rgba(180, 83, 9, 0.3);
-  --err: #d42f2f;
+  --err: #c62c2c;
   --err-soft: rgba(212, 47, 47, 0.1);
 
   --cat-compute: #3b6fe0;
@@ -165,8 +165,8 @@
   --series-2: #eb6834;
   --series-3: #1baf7a;
 
-  --shadow-window: 0 0 0 1px rgba(15, 17, 20, 0.05), 0 24px 56px -16px rgba(15, 17, 20, 0.22),
-    0 8px 18px -10px rgba(15, 17, 20, 0.14);
+  --shadow-window:
+    0 0 0 1px rgba(15, 17, 20, 0.05), 0 24px 56px -16px rgba(15, 17, 20, 0.22), 0 8px 18px -10px rgba(15, 17, 20, 0.14);
   --shadow-pop: 0 0 0 1px rgba(15, 17, 20, 0.05), 0 16px 40px -10px rgba(15, 17, 20, 0.24);
 }
 

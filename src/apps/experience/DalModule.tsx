@@ -68,7 +68,9 @@ export function DalModule() {
                   time,
                   tenant,
                   ok: valid,
-                  text: valid ? `access level → L${level} · applied to backend + device config` : `invalid level "L${level}" · rejected by validation guard`,
+                  text: valid
+                    ? `access level → L${level} · applied to backend + device config`
+                    : `invalid level "L${level}" · rejected by validation guard`,
                 },
                 ...prev,
               ].slice(0, 6),
@@ -88,12 +90,19 @@ export function DalModule() {
           <p className="label">Module · DAL</p>
           <h3 className="xp-module-title">GDPR Data Access Levels</h3>
           <p className="prose">
-            A 4-tier, config-driven privacy framework that enforces per-tenant data-access restrictions across both backend and
-            device configuration, with validation guards and audit logging.
+            A 4-tier, config-driven privacy framework that enforces per-tenant data-access restrictions across both
+            backend and device configuration, with validation guards and audit logging.
           </p>
         </div>
         <div className="chips">
-          {['4 access levels', 'config-driven', 'per-tenant', 'backend + device', 'validation guards', 'audit logging'].map((c) => (
+          {[
+            '4 access levels',
+            'config-driven',
+            'per-tenant',
+            'backend + device',
+            'validation guards',
+            'audit logging',
+          ].map((c) => (
             <span key={c} className="chip chip--accent">
               {c}
             </span>
@@ -105,7 +114,9 @@ export function DalModule() {
         <div className="stack">
           <div className="section-head">
             <h3>Enforcement path</h3>
-            <span className="label">{rejected ? 'guard · rejected' : stage === 4 ? 'applied' : stage > 0 ? 'propagating…' : 'idle'}</span>
+            <span className="label">
+              {rejected ? 'guard · rejected' : stage === 4 ? 'applied' : stage > 0 ? 'propagating…' : 'idle'}
+            </span>
           </div>
           <ArchitectureGraph
             label="Tenant access level propagates to backend and device configuration, passes access validation, and is recorded in the audit log"
@@ -126,7 +137,13 @@ export function DalModule() {
             <p className="label">Tenants · illustrative</p>
             <div className="dal-tenants" role="radiogroup" aria-label="Tenant">
               {TENANTS.map((t) => (
-                <button key={t} role="radio" aria-checked={tenant === t} className="dal-tenant" onClick={() => setTenant(t)}>
+                <button
+                  key={t}
+                  role="radio"
+                  aria-checked={tenant === t}
+                  className="dal-tenant"
+                  onClick={() => setTenant(t)}
+                >
                   <span className="mono">{t}</span>
                   <LevelMeter level={levels[t]} />
                 </button>
@@ -140,7 +157,13 @@ export function DalModule() {
             </p>
             <div className="seg dal-levels" role="radiogroup" aria-labelledby="dal-level-label">
               {[1, 2, 3, 4].map((l) => (
-                <button key={l} className="seg__btn" role="radio" aria-checked={draft === l} onClick={() => setDraft(l)}>
+                <button
+                  key={l}
+                  className="seg__btn"
+                  role="radio"
+                  aria-checked={draft === l}
+                  onClick={() => setDraft(l)}
+                >
                   L{l}
                   {current === l ? ' ·' : ''}
                 </button>
@@ -164,8 +187,10 @@ export function DalModule() {
               <ol className="dal-audit mono" aria-live="polite">
                 {audit.map((a) => (
                   <li key={a.id}>
-                    <span className="t-dim">{a.time}</span> {a.ok ? <Check size={11} className="t-ok" /> : <TriangleAlert size={11} className="t-err" />}{' '}
-                    <span className="t-accent">{a.tenant}</span> <span className={a.ok ? undefined : 't-err'}>{a.text}</span>
+                    <span className="t-dim">{a.time}</span>{' '}
+                    {a.ok ? <Check size={11} className="t-ok" /> : <TriangleAlert size={11} className="t-err" />}{' '}
+                    <span className="t-accent">{a.tenant}</span>{' '}
+                    <span className={a.ok ? undefined : 't-err'}>{a.text}</span>
                   </li>
                 ))}
               </ol>
@@ -175,9 +200,9 @@ export function DalModule() {
       </section>
 
       <Conceptual>
-        Conceptual model. The resume documents four access levels, config-driven per-tenant restrictions across backend and
-        device configuration, validation guards and audit logging; what each level restricts, and the internal schema, are
-        intentionally not shown. Tenant names are placeholders.
+        Conceptual model. The resume documents four access levels, config-driven per-tenant restrictions across backend
+        and device configuration, validation guards and audit logging; what each level restricts, and the internal
+        schema, are intentionally not shown. Tenant names are placeholders.
       </Conceptual>
     </div>
   );
@@ -185,11 +210,13 @@ export function DalModule() {
 
 function LevelMeter({ level }: { level: number }) {
   return (
-    <span className="dal-meter" aria-label={`Level ${level} of 4`}>
+    <span className="dal-meter" role="img" aria-label={`Level ${level} of 4`}>
       {[1, 2, 3, 4].map((i) => (
         <span key={i} className={i <= level ? 'is-on' : undefined} />
       ))}
-      <span className="mono">L{level}</span>
+      <span className="mono" aria-hidden="true">
+        L{level}
+      </span>
     </span>
   );
 }

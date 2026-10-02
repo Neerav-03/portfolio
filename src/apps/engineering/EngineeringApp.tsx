@@ -1,7 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 import type { AppId, AppParams } from '../../data/types';
-import { useOS } from '../../os/OSContext';
+import { useOS } from '../../os/useOS';
 import type { AppProps } from '../registry';
 import './engineering.css';
 
@@ -65,7 +65,9 @@ export default function EngineeringApp(_props: AppProps) {
   const [selected, setSelected] = useState<string | null>('AWS S3');
 
   // Skills with documented usage first; listed-only skills after (sort is stable).
-  const rows = SKILLS.filter((s) => group === 'All' || s.group === group).sort((a, b) => Number(b.used.length > 0) - Number(a.used.length > 0));
+  const rows = SKILLS.filter((s) => group === 'All' || s.group === group).sort(
+    (a, b) => Number(b.used.length > 0) - Number(a.used.length > 0),
+  );
   const sel = SKILLS.find((s) => s.name === selected) ?? null;
 
   return (
@@ -75,7 +77,9 @@ export default function EngineeringApp(_props: AppProps) {
           <div>
             <p className="label">engineering.graph</p>
             <h2 className="page-title">Skills, mapped to evidence</h2>
-            <p className="page-sub">Each dot is a place the resume documents the skill being used. Hollow rows are listed skills.</p>
+            <p className="page-sub">
+              Each dot is a place the resume documents the skill being used. Hollow rows are listed skills.
+            </p>
           </div>
         </header>
 
@@ -83,7 +87,9 @@ export default function EngineeringApp(_props: AppProps) {
           {GROUPS.map((g) => (
             <button key={g} role="tab" className="tab" aria-selected={group === g} onClick={() => setGroup(g)}>
               {g}
-              <span className="eng-count mono">{g === 'All' ? SKILLS.length : SKILLS.filter((s) => s.group === g).length}</span>
+              <span className="eng-count mono">
+                {g === 'All' ? SKILLS.length : SKILLS.filter((s) => s.group === g).length}
+              </span>
             </button>
           ))}
         </div>
@@ -98,8 +104,17 @@ export default function EngineeringApp(_props: AppProps) {
                     skill
                   </th>
                   {CONTEXTS.map((c) => (
-                    <th key={c.id} scope="col" className={hoverCtx === c.id ? 'is-hover' : undefined} onMouseEnter={() => setHoverCtx(c.id)}>
-                      <button className="eng-ctx" onClick={() => c.app && openApp(c.app, c.params)} title={`Open ${c.label}`}>
+                    <th
+                      key={c.id}
+                      scope="col"
+                      className={hoverCtx === c.id ? 'is-hover' : undefined}
+                      onMouseEnter={() => setHoverCtx(c.id)}
+                    >
+                      <button
+                        className="eng-ctx"
+                        onClick={() => c.app && openApp(c.app, c.params)}
+                        title={`Open ${c.label}`}
+                      >
                         <span>{c.label}</span>
                         <span className="mono">{c.sub}</span>
                       </button>
@@ -109,9 +124,16 @@ export default function EngineeringApp(_props: AppProps) {
               </thead>
               <tbody>
                 {rows.map((s) => (
-                  <tr key={s.name} className={`${selected === s.name ? 'is-sel' : ''} ${s.used.length === 0 ? 'is-listed' : ''}`}>
+                  <tr
+                    key={s.name}
+                    className={`${selected === s.name ? 'is-sel' : ''} ${s.used.length === 0 ? 'is-listed' : ''}`}
+                  >
                     <th scope="row">
-                      <button className="eng-skill" onClick={() => setSelected(s.name)} aria-pressed={selected === s.name}>
+                      <button
+                        className="eng-skill"
+                        onClick={() => setSelected(s.name)}
+                        aria-pressed={selected === s.name}
+                      >
                         <span className={`eng-skill__dot ${s.used.length ? 'is-used' : ''}`} aria-hidden="true" />
                         {s.name}
                       </button>
@@ -119,8 +141,16 @@ export default function EngineeringApp(_props: AppProps) {
                     {CONTEXTS.map((c) => {
                       const on = s.used.includes(c.id);
                       return (
-                        <td key={c.id} className={hoverCtx === c.id ? 'is-hover' : undefined} onMouseEnter={() => setHoverCtx(c.id)}>
-                          {on ? <span className="eng-dot" aria-label={`Used at ${c.label}`} /> : <span className="sr-only">—</span>}
+                        <td
+                          key={c.id}
+                          className={hoverCtx === c.id ? 'is-hover' : undefined}
+                          onMouseEnter={() => setHoverCtx(c.id)}
+                        >
+                          {on ? (
+                            <span className="eng-dot" role="img" aria-label={`Used at ${c.label}`} />
+                          ) : (
+                            <span className="sr-only">—</span>
+                          )}
                         </td>
                       );
                     })}

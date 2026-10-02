@@ -58,6 +58,11 @@
   gap: 8px;
   margin-bottom: 14px;
 }
+.rv-hero__who {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
 .rv-hero__name {
   font-size: clamp(28px, 4vw, 38px);
   font-weight: 620;
@@ -220,6 +225,11 @@
   }
   .rv-main {
     padding: 28px 16px 48px;
+  }
+  .rv-hero__who {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
   .rv-section {
     grid-template-columns: 1fr;

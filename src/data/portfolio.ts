@@ -151,8 +151,7 @@ export const extracurriculars: Extracurricular[] = [
     role: 'Host',
     stat: '400+',
     statLabel: 'participants',
-    detail:
-      'Hosted a quant aptitude test spanning number theory, geometry, combinatorics, probability and puzzles.',
+    detail: 'Hosted a quant aptitude test spanning number theory, geometry, combinatorics, probability and puzzles.',
   },
   {
     id: 'admad',

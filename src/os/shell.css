@@ -193,6 +193,11 @@
   margin: 0;
 }
 
+.identity__who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 .identity__name {
   font-size: 21px;
   font-weight: 600;

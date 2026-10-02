@@ -7,7 +7,17 @@ import type { GraphEdge, GraphNode } from '../../components/ArchitectureGraph';
 export const PLATFORM_NODES: GraphNode[] = [
   { id: 'device', label: 'DEVICE', sub: 'uploads · device config', x: 380, y: 48, w: 180, kind: 'client' },
   { id: 'services', label: 'VIDEO SERVICES', sub: 'backend core services', x: 380, y: 152, w: 196, kind: 'compute' },
-  { id: 's3', label: 'S3', sub: 'video + derived artifacts', x: 104, y: 272, w: 172, kind: 'storage', stack: true, badge: '×5' },
+  {
+    id: 's3',
+    label: 'S3',
+    sub: 'video + derived artifacts',
+    x: 104,
+    y: 272,
+    w: 172,
+    kind: 'storage',
+    stack: true,
+    badge: '×5',
+  },
   { id: 'iam', label: 'IAM', sub: 'cross-environment', x: 288, y: 272, w: 152, kind: 'identity' },
   { id: 'kms', label: 'KMS', sub: 'keys', x: 472, y: 272, w: 152, kind: 'security' },
   { id: 'pg', label: 'POSTGRESQL', sub: 'relational data', x: 656, y: 272, w: 156, kind: 'data' },

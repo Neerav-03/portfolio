@@ -1,11 +1,4 @@
-export type AppId =
-  | 'experience'
-  | 'projects'
-  | 'engineering'
-  | 'code'
-  | 'education'
-  | 'about'
-  | 'resume';
+export type AppId = 'experience' | 'projects' | 'engineering' | 'code' | 'education' | 'about' | 'resume';
 
 /** Optional deep-link target inside an app, e.g. { view: 'drp' }. */
 export interface AppParams {

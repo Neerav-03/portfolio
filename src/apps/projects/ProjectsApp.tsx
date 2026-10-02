@@ -14,11 +14,13 @@ const ICONS = { moviemate: Clapperboard, doclink: Stethoscope };
 
 export default function ProjectsApp({ params, nonce, onView }: AppProps) {
   const [view, setView] = useState<View>(() => toView(params.view));
+  const [seenNonce, setSeenNonce] = useState(nonce);
   const mainRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (nonce > 0) setView(toView(params.view));
-  }, [nonce, params.view]);
+  if (nonce !== seenNonce) {
+    setSeenNonce(nonce);
+    setView(toView(params.view));
+  }
   useEffect(() => {
     onView(view);
     mainRef.current?.scrollTo({ top: 0 });

@@ -80,7 +80,8 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 9.5px;
-  color: color-mix(in srgb, var(--band) 70%, var(--text));
+  color: var(--text);
+  font-weight: 600;
   white-space: nowrap;
 }
 .cp-ladder__marker {

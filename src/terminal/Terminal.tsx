@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { useOS } from '../os/OSContext';
+import { useOS } from '../os/useOS';
 import { complete, runCommand, type Line, type TermContext } from './commands';
 import './terminal.css';
 
@@ -12,8 +12,15 @@ interface Entry {
 
 const PROMPT_USER = 'guest@neerav-os';
 const WELCOME: Line[] = [
-  [{ text: 'NEERAV OS terminal', tone: 'head' }, { text: ' · v1.0', tone: 'dim' }],
-  [{ text: 'Type ', tone: 'dim' }, { text: 'help', tone: 'accent' }, { text: ' to list commands. Tab completes, ↑/↓ recalls history, Esc closes.', tone: 'dim' }],
+  [
+    { text: 'NEERAV OS terminal', tone: 'head' },
+    { text: ' · v1.0', tone: 'dim' },
+  ],
+  [
+    { text: 'Type ', tone: 'dim' },
+    { text: 'help', tone: 'accent' },
+    { text: ' to list commands. Tab completes, ↑/↓ recalls history, Esc closes.', tone: 'dim' },
+  ],
 ];
 
 function Prompt() {
@@ -28,12 +35,23 @@ function Prompt() {
 }
 
 function renderLine(line: Line, key: number) {
-  if (typeof line === 'string') return <div key={key} className="term__line">{line || ' '}</div>;
+  if (typeof line === 'string')
+    return (
+      <div key={key} className="term__line">
+        {line || ' '}
+      </div>
+    );
   return (
     <div key={key} className="term__line">
       {line.map((seg, i) =>
         seg.href ? (
-          <a key={i} className={`t-${seg.tone ?? 'accent'}`} href={seg.href} target={seg.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+          <a
+            key={i}
+            className={`t-${seg.tone ?? 'accent'}`}
+            href={seg.href}
+            target={seg.href.startsWith('http') ? '_blank' : undefined}
+            rel="noreferrer"
+          >
             {seg.text}
           </a>
         ) : (
@@ -137,7 +155,14 @@ export default function Terminal() {
   };
 
   return (
-    <div className={`term${open ? ' is-open' : ''}`} role="dialog" aria-modal="false" aria-label="Terminal" inert={!open} aria-hidden={!open}>
+    <div
+      className={`term${open ? ' is-open' : ''}`}
+      role="dialog"
+      aria-modal="false"
+      aria-label="Terminal"
+      inert={!open}
+      aria-hidden={!open}
+    >
       <div className="term__bar mono">
         <span className="dot dot--ok" aria-hidden="true" />
         <span>terminal — {PROMPT_USER}</span>
@@ -149,6 +174,7 @@ export default function Terminal() {
       <div
         ref={scrollRef}
         className="term__body mono"
+        role="presentation"
         onMouseUp={() => {
           if (!window.getSelection()?.toString()) inputRef.current?.focus();
         }}

@@ -1,4 +1,4 @@
-import { useOS } from './OSContext';
+import { useOS } from './useOS';
 
 export function ModeToggle() {
   const { state, setMode } = useOS();

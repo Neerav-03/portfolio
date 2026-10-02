@@ -27,12 +27,21 @@ const EDGES: GraphEdge[] = [
 const ROLES: Record<Role, { label: string; can: string[]; nodes: string[] }> = {
   user: {
     label: 'User',
-    can: ['Register and log in (passwords hashed with bcrypt.js)', 'Check doctor availability', 'Request an appointment', 'Receive push notifications'],
+    can: [
+      'Register and log in (passwords hashed with bcrypt.js)',
+      'Check doctor availability',
+      'Request an appointment',
+      'Receive push notifications',
+    ],
     nodes: ['user', 'react', 'api', 'auth', 'notify', 'db'],
   },
   doctor: {
     label: 'Doctor',
-    can: ['Register as a doctor (pending admin approval)', 'Approve appointment requests', 'Receive push notifications'],
+    can: [
+      'Register as a doctor (pending admin approval)',
+      'Approve appointment requests',
+      'Receive push notifications',
+    ],
     nodes: ['doctor', 'react', 'api', 'notify', 'db'],
   },
   admin: {
@@ -87,7 +96,16 @@ export function DocLinkView() {
           <div className="section-head">
             <div className="seg" role="radiogroup" aria-label="Role">
               {(Object.keys(ROLES) as Role[]).map((r) => (
-                <button key={r} className="seg__btn" role="radio" aria-checked={role === r && step === null} onClick={() => { setStep(null); setRole(r); }}>
+                <button
+                  key={r}
+                  className="seg__btn"
+                  role="radio"
+                  aria-checked={role === r && step === null}
+                  onClick={() => {
+                    setStep(null);
+                    setRole(r);
+                  }}
+                >
                   {ROLES[r].label.toUpperCase()}
                 </button>
               ))}

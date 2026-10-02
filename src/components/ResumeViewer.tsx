@@ -48,7 +48,11 @@ export function ResumeViewer() {
   return (
     <div className="resume-viewer">
       {inline ? (
-        <iframe className="resume-viewer__frame" src={`${resumeUrl}#view=FitH&navpanes=0`} title={`${profile.name} — resume (PDF)`} />
+        <iframe
+          className="resume-viewer__frame"
+          src={`${resumeUrl}#view=FitH&navpanes=0`}
+          title={`${profile.name} — resume (PDF)`}
+        />
       ) : (
         <Suspense fallback={<div className="loading">loading viewer…</div>}>
           <PdfCanvas url={resumeUrl} onError={onError} />

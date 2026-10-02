@@ -94,7 +94,9 @@
   background: var(--surface-3);
   border: 1px solid var(--line-strong);
   color: transparent;
-  transition: background var(--dur-fast), color var(--dur-fast);
+  transition:
+    background var(--dur-fast),
+    color var(--dur-fast);
 }
 .win__controls:hover .win__ctl,
 .win__ctl:focus-visible {

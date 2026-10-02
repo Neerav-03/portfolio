@@ -41,7 +41,15 @@ export function MovieMateView() {
           <h3 id="mm-web">Web app</h3>
           <span className="label">conceptual</span>
         </div>
-        <ArchitectureGraph label="Browser to Next.js app, which fetches from the TMDB API and embeds a Disqus comment section" nodes={WEB_NODES} edges={WEB_EDGES} width={600} height={200} flow minWidth={480} />
+        <ArchitectureGraph
+          label="Browser to Next.js app, which fetches from the TMDB API and embeds a Disqus comment section"
+          nodes={WEB_NODES}
+          edges={WEB_EDGES}
+          width={600}
+          height={200}
+          flow
+          minWidth={480}
+        />
       </section>
 
       <section className="stack" aria-labelledby="mm-rec">
@@ -49,7 +57,15 @@ export function MovieMateView() {
           <h3 id="mm-rec">Recommendation service</h3>
           <span className="label">conceptual</span>
         </div>
-        <ArchitectureGraph label="Movie data flows into a Flask service that applies TF-IDF vectorization and cosine similarity to produce recommendations" nodes={REC_NODES} edges={REC_EDGES} width={770} height={112} flow minWidth={620} />
+        <ArchitectureGraph
+          label="Movie data flows into a Flask service that applies TF-IDF vectorization and cosine similarity to produce recommendations"
+          nodes={REC_NODES}
+          edges={REC_EDGES}
+          width={770}
+          height={112}
+          flow
+          minWidth={620}
+        />
       </section>
 
       <section className="stack pj-demo panel" aria-labelledby="mm-demo">
@@ -58,12 +74,18 @@ export function MovieMateView() {
           <span className="label">live · in your browser</span>
         </div>
         <p className="prose">
-          Pick a movie. Its keywords are vectorized with TF-IDF, and the nearest neighbours by cosine similarity are returned
-          &mdash; the same idea behind MovieMate&rsquo;s Flask backend, on a 12-title toy corpus.
+          Pick a movie. Its keywords are vectorized with TF-IDF, and the nearest neighbours by cosine similarity are
+          returned &mdash; the same idea behind MovieMate&rsquo;s Flask backend, on a 12-title toy corpus.
         </p>
         <div className="pj-movies" role="radiogroup" aria-label="Movie">
           {TOY_MOVIES.map((m, i) => (
-            <button key={m.title} role="radio" aria-checked={pick === i} className="pj-movie" onClick={() => setPick(i)}>
+            <button
+              key={m.title}
+              role="radio"
+              aria-checked={pick === i}
+              className="pj-movie"
+              onClick={() => setPick(i)}
+            >
               {m.title}
             </button>
           ))}
@@ -84,7 +106,10 @@ export function MovieMateView() {
             );
           })}
         </ol>
-        <Conceptual>Toy demo of TF-IDF + cosine similarity. The titles and keywords are hand-written examples, not MovieMate&rsquo;s data.</Conceptual>
+        <Conceptual>
+          Toy demo of TF-IDF + cosine similarity. The titles and keywords are hand-written examples, not
+          MovieMate&rsquo;s data.
+        </Conceptual>
       </section>
     </>
   );

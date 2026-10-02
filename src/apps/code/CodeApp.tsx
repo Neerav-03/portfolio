@@ -45,7 +45,11 @@ function RankLadder({ profile }: { profile: CodingProfile }) {
   const pos = ((profile.maxRating - ladder.min) / span) * 100;
   const current = ladder.bands.find((b) => profile.maxRating >= b.from && profile.maxRating < b.to);
   return (
-    <div className="cp-ladder" role="img" aria-label={`${profile.platform} max rating ${profile.maxRating}, in the ${current?.name} band`}>
+    <div
+      className="cp-ladder"
+      role="img"
+      aria-label={`${profile.platform} max rating ${profile.maxRating}, in the ${current?.name} band`}
+    >
       <div className="cp-ladder__track">
         {ladder.bands.map((b) => (
           <span
@@ -74,11 +78,13 @@ function RankLadder({ profile }: { profile: CodingProfile }) {
 
 export default function CodeApp({ params, nonce, onView }: AppProps) {
   const [focus, setFocus] = useState<string | undefined>(params.view);
+  const [seenNonce, setSeenNonce] = useState(nonce);
   const refs = useRef<Record<string, HTMLElement | null>>({});
 
-  useEffect(() => {
+  if (nonce !== seenNonce) {
+    setSeenNonce(nonce);
     setFocus(params.view);
-  }, [nonce, params.view]);
+  }
 
   useEffect(() => {
     if (!focus) return;
@@ -106,14 +112,19 @@ export default function CodeApp({ params, nonce, onView }: AppProps) {
               }}
               className={`cp-card panel${focus === p.id ? ' is-focus' : ''}`}
               aria-labelledby={`cp-${p.id}`}
-              onClick={() => setFocus(p.id)}
             >
               <div className="cp-card__cmd mono">
                 <span className="t-ok">$</span> {p.id} profile <span className="t-accent">{p.handle}</span>
               </div>
               <div className="cp-card__head">
                 <h3 id={`cp-${p.id}`}>{p.platform}</h3>
-                <a className="btn btn--sm btn--ghost" href={p.url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                <a
+                  className="btn btn--sm btn--ghost"
+                  href={p.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   profile <ArrowUpRight size={12} />
                 </a>
               </div>
@@ -162,8 +173,8 @@ export default function CodeApp({ params, nonce, onView }: AppProps) {
         </section>
 
         <p className="note">
-          Ratings are the documented maxima from the resume. Rank bands use each platform&rsquo;s public thresholds; no rating
-          history is shown because none is documented here.
+          Ratings are the documented maxima from the resume. Rank bands use each platform&rsquo;s public thresholds; no
+          rating history is shown because none is documented here.
         </p>
       </div>
     </div>

@@ -20,6 +20,8 @@ export interface WindowState {
 export interface OSState {
   /** Ordered by z-index: last element is on top. */
   windows: WindowState[];
+  /** True once any window has opened (the URL hash is left alone until then). */
+  hasOpenedWindow: boolean;
   terminalOpen: boolean;
   paletteOpen: boolean;
   /** Resume preview modal (recruiter mode; system mode uses the Resume window). */
@@ -98,7 +100,7 @@ export function osReducer(state: OSState, action: OSAction): OSState {
         params: action.params ?? {},
         nonce: 0,
       };
-      return { ...state, windows: [...state.windows, win] };
+      return { ...state, hasOpenedWindow: true, windows: [...state.windows, win] };
     }
     case 'close':
       return {
@@ -120,17 +122,13 @@ export function osReducer(state: OSState, action: OSAction): OSState {
     case 'toggleMax':
       return {
         ...state,
-        windows: state.windows.map((w) =>
-          w.id === action.id ? { ...w, maximized: !w.maximized } : w,
-        ),
+        windows: state.windows.map((w) => (w.id === action.id ? { ...w, maximized: !w.maximized } : w)),
       };
     case 'bounds':
       return {
         ...state,
         windows: state.windows.map((w) =>
-          w.id === action.id
-            ? { ...w, x: action.x, y: action.y, w: action.w ?? w.w, h: action.h ?? w.h }
-            : w,
+          w.id === action.id ? { ...w, x: action.x, y: action.y, w: action.w ?? w.w, h: action.h ?? w.h } : w,
         ),
       };
     case 'view':
