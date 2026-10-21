@@ -78,6 +78,8 @@ export interface World {
   stats: { commits: number; squashed: number; hurts: number; falls: number };
   time: number;
   won: boolean;
+  /** False until the player's first key or tap after Play: nothing moves (bugs included) and the clock is stopped. */
+  started: boolean;
 }
 
 const PLAYER_W = 10;
@@ -121,6 +123,7 @@ export function createWorld(level: Level = buildLevel()): World {
     stats: { commits: 0, squashed: 0, hurts: 0, falls: 0 },
     time: 0,
     won: false,
+    started: false,
   };
 }
 
@@ -284,10 +287,10 @@ function stepOnce(w: World, input: Input, dt: number, events: QuestEvent[]) {
   }
 }
 
-/** Advance the world; long frames are split so nothing tunnels through tiles. */
+/** Advance the world (once started); long frames are split so nothing tunnels through tiles. */
 export function step(w: World, input: Input, dt: number): QuestEvent[] {
   const events: QuestEvent[] = [];
-  if (w.won) return events;
+  if (w.won || !w.started) return events;
   let remaining = Math.min(dt, 0.1);
   while (remaining > 0) {
     const slice = Math.min(remaining, 1 / 120);

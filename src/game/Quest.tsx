@@ -38,6 +38,8 @@ const KEYS: Record<string, keyof Input> = {
   w: 'jump',
   W: 'jump',
 };
+/** Keys that never start the run: focus moves and bare modifiers. */
+const NON_START_KEYS = new Set(['Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock']);
 const COMMITS_TOTAL = buildLevel().commits.length;
 const noInput = (): Input => ({ left: false, right: false, jump: false });
 
@@ -55,10 +57,12 @@ export default function Quest() {
   const [revealed, setRevealed] = useState<boolean[]>(() => facts.map(() => false));
   const [hud, setHud] = useState({ commits: 0, squashed: 0 });
   const [announcement, setAnnouncement] = useState('');
+  // After Play the world waits (bugs frozen, clock stopped) for the player's first key or tap.
+  const [waiting, setWaiting] = useState(false);
   const [result, setResult] = useState<{ seconds: number; facts: number; commits: number } | null>(null);
   // Desktop (keyboard) players get tutorial signs and a hint chip until they've moved and jumped.
   const touch = useMediaQuery('(pointer: coarse)');
-  const hintsRef = useRef(true);
+  const hintsRef = useRef(false);
   const [learned, setLearned] = useState({ moved: false, jumped: false });
   // Sound + haptics: one switch, remembered between visits.
   const fxRef = useRef<Feedback | null>(null);
@@ -110,10 +114,11 @@ export default function Quest() {
     return () => mo.disconnect();
   }, [draw]);
 
+  // Tutorial signs appear once the player presses Play; the title screen stays clean.
   useEffect(() => {
-    hintsRef.current = !touch;
+    hintsRef.current = !touch && status !== 'title';
     draw();
-  }, [touch, draw]);
+  }, [touch, status, draw]);
 
   // Crisp pixels at any size: an integer multiple of the logical resolution.
   useEffect(() => {
@@ -136,15 +141,23 @@ export default function Quest() {
       setRevealed(facts.map(() => false));
       setHud({ commits: 0, squashed: 0 });
       setResult(null);
-      setAnnouncement('');
+      setAnnouncement(touch ? 'Ready. Tap to start.' : 'Ready. Press any key to start.');
       setLearned({ moved: false, jumped: false });
     }
     inputRef.current = noInput();
+    setWaiting(worldRef.current?.started !== true);
     setStatus('playing');
     fxRef.current?.unlock();
     fxRef.current?.cue('start');
     hostRef.current?.focus({ preventScroll: true });
-  }, [facts, setStatus]);
+  }, [facts, touch, setStatus]);
+
+  const begin = useCallback(() => {
+    const world = worldRef.current;
+    if (statusRef.current !== 'playing' || !world || world.started) return;
+    world.started = true;
+    setWaiting(false);
+  }, []);
 
   const pause = useCallback(() => {
     if (statusRef.current !== 'playing') return;
@@ -215,6 +228,7 @@ export default function Quest() {
         pause();
         return;
       }
+      if (!NON_START_KEYS.has(e.key)) begin();
       const k = KEYS[e.key];
       if (k) {
         e.preventDefault();
@@ -233,20 +247,24 @@ export default function Quest() {
       const within = host.closest('.quest') ?? host;
       if (!within.contains(e.relatedTarget as Node | null)) pause();
     };
+    // A click or tap on the game also starts the run (touch players have no keys).
+    const onPointerDown = () => begin();
     const onVisibility = () => {
       if (document.hidden) pause();
     };
     host.addEventListener('keydown', onKeyDown);
     host.addEventListener('keyup', onKeyUp);
     host.addEventListener('focusout', onFocusOut);
+    host.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('visibilitychange', onVisibility);
     return () => {
       host.removeEventListener('keydown', onKeyDown);
       host.removeEventListener('keyup', onKeyUp);
       host.removeEventListener('focusout', onFocusOut);
+      host.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [start, pause, toggleSound]);
+  }, [start, begin, pause, toggleSound]);
 
   // PLAY icon / terminal / palette.
   useEffect(() => {
@@ -265,7 +283,10 @@ export default function Quest() {
     e.preventDefault();
     const key = e.currentTarget.dataset.key as keyof Input;
     const down = e.type === 'pointerdown';
-    if (down) e.currentTarget.setPointerCapture(e.pointerId);
+    if (down) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      begin();
+    }
     inputRef.current[key] = down;
   };
 
@@ -306,7 +327,7 @@ export default function Quest() {
 
       <div
         ref={hostRef}
-        className={`quest__stage is-${status}`}
+        className={`quest__stage is-${status}${waiting ? ' is-waiting' : ''}`}
         // A focusable game surface: arrow keys / WASD move, Space jumps, Esc pauses.
         role="application"
         aria-roledescription="game"
@@ -315,7 +336,12 @@ export default function Quest() {
       >
         <canvas ref={canvasRef} className="quest__canvas" aria-hidden="true" />
 
-        {status === 'playing' && !touch && !(learned.moved && learned.jumped) && (
+        {status === 'playing' && waiting && (
+          <p className="quest__ready mono" aria-hidden="true">
+            {touch ? 'Tap to start' : 'Press any key to start'}
+          </p>
+        )}
+        {status === 'playing' && !waiting && !touch && !(learned.moved && learned.jumped) && (
           <p className="quest__hint mono" aria-hidden="true">
             {!learned.moved ? (
               <>
@@ -332,15 +358,9 @@ export default function Quest() {
         {status === 'title' && (
           <div className="quest__overlay">
             <p className="quest__logo mono">NEERAV QUEST</p>
-            <p className="quest__tag">A 45-second side quest through my resume. Hit the {'{ }'} blocks.</p>
             <button className="btn btn--primary" onClick={start}>
               <Play size={14} /> Play
             </button>
-            <p className="quest__keys mono" aria-hidden="true">
-              <span className="kbd">←</span>
-              <span className="kbd">→</span> move <span className="kbd">Space</span> jump{' '}
-              <span className="kbd">Esc</span> pause <span className="kbd">M</span> mute
-            </p>
           </div>
         )}
         {status === 'paused' && (

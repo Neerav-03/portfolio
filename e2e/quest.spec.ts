@@ -50,6 +50,19 @@ test.describe('Neerav Quest', () => {
     await expect(page.locator('.quest__facts li.is-on').first()).toContainText('Software Engineer');
   });
 
+  test('after Play the world waits for the first key (bugs frozen)', async ({ page, os, isMobile }) => {
+    test.skip(isMobile, 'tap covered by the phones test');
+    await os.visit();
+    const stage = page.getByRole('application', { name: /neerav quest/i });
+    await stage.getByRole('button', { name: /^play$/i }).click();
+    await expect(stage).toHaveClass(/is-waiting/);
+    await page.waitForTimeout(700);
+    await expect(stage).toHaveClass(/is-waiting/);
+    await page.keyboard.press('KeyX');
+    await expect(stage).not.toHaveClass(/is-waiting/);
+    await expect(page.locator('.quest__ready')).toBeHidden();
+  });
+
   test('PLAY in the app menu starts the game', async ({ page, os }) => {
     await os.visit();
     await page.getByRole('navigation', { name: 'Applications' }).getByRole('button', { name: 'PLAY' }).click();
@@ -91,6 +104,8 @@ test.describe('Neerav Quest: tutorial and sound', () => {
     await os.visit();
     const stage = page.getByRole('application', { name: /neerav quest/i });
     await stage.getByRole('button', { name: /^play$/i }).click();
+    await expect(page.locator('.quest__ready')).toBeVisible();
+    await page.keyboard.press('Enter');
     await expect(page.getByText(/to move/)).toBeVisible();
     await page.keyboard.down('ArrowRight');
     await page.waitForTimeout(150);
@@ -109,6 +124,10 @@ test.describe('Neerav Quest: tutorial and sound', () => {
       .click();
     await expect(page.locator('.quest__pad')).toBeVisible();
     await expect(page.locator('.quest__hint')).toHaveCount(0);
+    // Waits for a tap; a control press starts the run.
+    await expect(page.locator('.quest__ready', { hasText: 'Tap to start' })).toBeVisible();
+    await page.locator('.quest__key').first().tap();
+    await expect(page.locator('.quest__ready', { hasText: 'Tap to start' })).toBeHidden();
   });
 
   test('mute is remembered across visits', async ({ page, os }) => {
